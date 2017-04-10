@@ -1,0 +1,35 @@
+.gs-taglist {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.gs-taglist {
+    color: #73be00;
+}
+
+.gs-taglist-tag {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+    padding: 0 19px;
+    height: 30px;
+    margin-left: 10px;
+    cursor: pointer;
+    background-color: white;
+    color: #757575
+}
+
+.gs-taglist-tag-active {
+    border-color: #73be00;
+    color: #ffffff;
+    background-color: #73be00;
+
+}
+
+.gs-taglist-tag:hover {
+    border-color: #73be00;
+}

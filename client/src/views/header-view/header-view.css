@@ -1,0 +1,135 @@
+.gs-header-decorator {
+    background-color: #555;
+    padding: 4px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.gs-header-decorator a {
+    display: flex;
+}
+
+.gs-header-info {
+    height: 235px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+}
+
+.gs-header-info-tagline {
+    position: absolute;
+    bottom: 6px;
+    right: 10%;
+    margin-right: 10px;
+    font-family: "Selawik Light";
+}
+
+.gs-header-info-tagline > a,
+.gs-header-info-tagline > a:hover {
+    color: #666;
+}
+
+.gs-header-navbar {
+    display: flex;
+    align-items: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 10%;
+}
+
+.gs-header-navbar-hover-enabled:hover {
+    font-weight: bold;
+}
+
+.gs-header-navbar-spacer {
+    width: 125px;
+    margin-left: 10px;
+}
+
+.gs-header-navbar-link-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.gs-header-navbar-link {
+    /* This mixture of margin and padding is used to put the underline (border) in the right place */
+    margin: 0px 25px;
+    padding-bottom: 3px;
+    text-decoration: none;
+    color: #757575;
+    font-size: 16px;
+}
+
+.gs-header-navbar-link:hover {
+    text-decoration: none;
+    color: #999;
+}
+
+.gs-header-navbar-link-active {
+    text-decoration: none;
+    color: #73be00;
+    border-bottom: 2px solid #73be00;
+}
+
+.gs-header-navbar-link-active:hover {
+    color: #73be00;
+    text-decoration: none;
+}
+
+.gs-header-navbar-cart,
+.gs-header-navbar-cart-active {
+    margin-right: 10px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 125px;
+    font-size: 15px;
+}
+
+.gs-header-navbar-cart {
+    border: 1px solid #ff9311;
+    text-decoration: none;
+    color: #ff9311;
+    background-color: white;
+    width: 125px;
+}
+
+.gs-header-navbar-cart-icon {
+    margin-right: 5px;
+}
+
+.gs-header-navbar-cart:hover {
+    background-color: #ff9311;
+    text-decoration: none;
+    color: #fff;
+}
+
+.gs-header-navbar-cart-img {
+    background-image: url(/img/Shopping-Cart_Orange.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 12px;
+    margin-right: 5px;
+}
+
+.gs-header-navbar-cart:hover .gs-header-navbar-cart-img {
+    background-image: url(/img/Shopping-Cart_White_For-Button-in-module.png);
+}
+
+.gs-header-navbar-cart-active {
+    background-color: #ff9311;
+    text-decoration: none;
+    color: #fff;
+}
+
+.gs-header-navbar-cart-active:hover {
+    background-color: #af6012;
+    text-decoration: none;
+    color: #fff;
+}

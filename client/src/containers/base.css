@@ -1,0 +1,17 @@
+@font-face {
+    font-family: "Selawik";
+    src: url("/fonts/selawk.woff2");
+    src: url("/fonts/selawk.woff");
+}
+
+@font-face {
+    font-family: "Selawik Light";
+    src: url("/fonts/selawkl.woff2");
+    src: url("/fonts/selawkl.woff");
+}
+
+body {
+    background-color: rgba(247, 247, 247, 0.4);
+    font-family: "Selawik";
+    margin: 0;
+}
