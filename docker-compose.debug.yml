@@ -15,3 +15,9 @@ services:
     volumes:
       - .:/usr/src/app
     command: node --debug=5858 server/index.js
+    links:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
