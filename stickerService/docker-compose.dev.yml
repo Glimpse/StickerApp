@@ -1,0 +1,49 @@
+version: '2'
+
+services:
+  mongo-stickers:
+    image: mongo:3.5.5
+    ports:
+    - 27017:27017
+
+  sticker-service:
+    depends_on:
+    - kafka
+    - mongo-stickers
+    - redis
+    build:
+      context: ${PROJECT_ROOT}/stickerService
+      dockerfile: Dockerfile.dev
+    container_name: sticker-service
+    env_file:
+    - debug.env
+    command: nodemon --debug=0.0.0.0:5959 --legacy-watch index.js
+    ports:
+    - 2000:2000
+    - 5959:5959
+    volumes:
+    - ${PROJECT_ROOT}/stickerService:/app:ro
+    - /app/node_modules
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+    - 2181:2181
+
+  kafka:
+    depends_on:
+    - zookeeper
+    image: wurstmeister/kafka
+    ports:
+    - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CREATE_TOPICS: TrendingStickers:1:1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+  redis:
+    image: redis:3.2.8-alpine
+    ports:
+    - 6379:6379
