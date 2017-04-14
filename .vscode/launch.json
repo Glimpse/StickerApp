@@ -66,6 +66,15 @@
             "localRoot": "${workspaceRoot}/sessionService",
             "remoteRoot": "/app/",
             "restart": true
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach (sticker service)",
+            "port": 5959,
+            "localRoot": "${workspaceRoot}/stickerService/",
+            "remoteRoot": "/app/",
+            "restart": true
         }
     ]
 }
