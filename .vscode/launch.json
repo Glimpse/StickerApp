@@ -56,6 +56,16 @@
             "request": "launch",
             "name": "Launch Sticker App Gateway",
             "program": "${workspaceRoot}/apigateway/app.js"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach (session service)",
+            "address": "localhost",
+            "port": 5757,
+            "localRoot": "${workspaceRoot}/sessionService",
+            "remoteRoot": "/app/",
+            "restart": true
         }
     ]
 }

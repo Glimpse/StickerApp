@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  session:
+    depends_on:
+    - kafka
+    - redis
+    - stickers
+    build:
+      context: ${PROJECT_ROOT}/session
+      dockerfile: Dockerfile.dev
+    container_name: session-service
+    env_file:
+    - ${PROJECT_ROOT}/session/debug.env
+    command: nodemon --inspect=0.0.0.0:5757 --legacy-watch index.js
+    ports:
+    - 4000:4000
+    - 5757:5757
+    volumes:
+    - ${PROJECT_ROOT}/session:/app:ro
+    - /app/node_modules
