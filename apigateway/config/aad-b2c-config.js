@@ -11,7 +11,8 @@ exports.creds = {
     // More info can be found here: https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-tokens
     responseType: 'code id_token',
 
-    // Required
+    // Required - set to either form_post or query; form_post is recommended.  TODO: Follow up on this (this setting
+    // controls whether POST\GET is issued for authentication callback).
     responseMode: 'form_post',
 
     // Required, the reply URL registered in AAD for your app

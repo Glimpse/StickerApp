@@ -20,8 +20,3 @@ module.exports = function defineUser(sequelize)
         User: user
     };
 };
-
-
-
-
-

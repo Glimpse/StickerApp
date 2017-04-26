@@ -6,6 +6,9 @@ var profileModel = require('../models/profile');
 var getTables = (function getTables(){
     var tables = null;
 
+    //The User and Profile tables share a compositional relationship and are used to store the authenticated
+    //user's information.  Passport then stores\retrieves the authenticated user data to\from MySQL based on the user id
+    //that is stored in the server session - this is so that the user only has to log in once.
     return function initTables() {
         if (!tables){
             tables = {
@@ -20,6 +23,7 @@ var getTables = (function getTables(){
 var getSequelize = (function getSequelize() {
     var dbSequelize = null;
 
+    //Connects Sequelize for use with our MySQL db.
     return function initSequelize() {
         if (!dbSequelize) {
             dbSequelize = new Sequelize(
@@ -37,8 +41,7 @@ function connectToAuthDb(){
 
     return new Promise(function connect(resolve, reject) {
 
-         //TODO: database must already be created; need to be this info in the docs on how to run a MySQL docker container
-        //and also how to create a database
+         //Note: The database must already be created, otherwise you will see an error.
         getSequelize().authenticate()
 
         .then(function finishConnect(err) {
@@ -57,7 +60,7 @@ function createUserProfileSchema(){
 
     return new Promise(function defineTables(resolve, reject){
 
-        //Get the table definitions and add relationships
+        //Creates the User\Profile tables and their shared relationship.
         var tables = getTables();
         tables.userTable.associate(tables.profileTable);
         tables.profileTable.associate(tables.userTable);
@@ -88,6 +91,8 @@ exports.setupAuthDataStore = function setup() {
 exports.findUserProfile = findUserProfile;
 function findUserProfile(userId){
 
+    //Attempts to find the authenticated user in MySQL by their id; this is the id that is stored within the
+    //server side session.
     return new Promise(function find(resolve, reject){
 
         getTables().userTable.findById(
@@ -113,6 +118,7 @@ function findUserProfile(userId){
 
 exports.deleteUserProfile = function performDelete(userId){
 
+    //Deletes the user profile from MySQL; this is needed when the user logs out.
     return new Promise(function (resolve, reject){
 
         findUserProfile(userId)
@@ -134,6 +140,8 @@ exports.deleteUserProfile = function performDelete(userId){
 
 exports.findOrCreateUserProfile = function(userId, authType, displayName, firstName, lastName, email){
 
+    //When a user is authenticated, checks to see if the user already exists in MySQL; if it doesn't,
+    //this user and profile is created.
     return new Promise(function (resolve, reject){
 
         var tables = getTables();
@@ -179,6 +187,8 @@ exports.findOrCreateUserProfile = function(userId, authType, displayName, firstN
 
 exports.isUserLoggedIn = function isAuthenticated(req, res, next){
 
+    //Determines whether the user is authenticated; if they are, execution will continue to the next middleware
+    //function.  Otherwise, the user will be redirected to login.
     if (req.isAuthenticated()) {
         console.log('Authentication succeeded');
         return next();
