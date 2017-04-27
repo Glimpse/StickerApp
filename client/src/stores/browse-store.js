@@ -7,8 +7,7 @@ import { readCookie } from '../utils/cookies';
 let selectedTags = readCookie('searchTags');
 if (selectedTags) {
     selectedTags = JSON.parse(selectedTags);
-}
-else {
+} else {
     selectedTags = [];
 }
 

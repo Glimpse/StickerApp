@@ -18,6 +18,7 @@ module.exports = {
     },
 
     rules: {
+        'brace-style': [ 2, '1tbs', { allowSingleLine: true }],
         'camelcase': 2,
         'comma-spacing': [ 2, { before: false, after: true } ],
         'curly': 2,

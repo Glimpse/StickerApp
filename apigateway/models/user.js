@@ -1,7 +1,6 @@
 var Sequelize = require('sequelize');
 
-module.exports = function defineUser(sequelize)
-{
+module.exports = function defineUser(sequelize) {
     var user = sequelize.define('user', {
         id: {
             type: Sequelize.STRING,
