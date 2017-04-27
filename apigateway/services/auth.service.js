@@ -119,13 +119,13 @@ function findUserProfile(userId){
 exports.deleteUserProfile = function performDelete(userId){
 
     //Deletes the user profile from MySQL; this is needed when the user logs out.
-    return new Promise(function finishDeleteUserProfile(resolve, reject){
+    return new Promise(function findAndDelete(resolve, reject){
 
         findUserProfile(userId)
 
-        .then(function destroy(user){
+        .then(function startDelete(user){
             user.destroy()
-            .then(function finishDestroy(){
+            .then(function finishDelete(){
                 console.log('User deletion successful');
                 resolve();
             });
@@ -138,11 +138,11 @@ exports.deleteUserProfile = function performDelete(userId){
     });
 };
 
-exports.findOrCreateUserProfile = function performFindOrCreateUser(userId, authType, displayName, firstName, lastName, email){
+exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType, displayName, firstName, lastName, email){
 
     //When a user is authenticated, checks to see if the user already exists in MySQL; if it doesn't,
     //this user and profile is created.
-    return new Promise(function finishFindOrCreateUser(resolve, reject){
+    return new Promise(function findOrCreate(resolve, reject){
 
         var tables = getTables();
 
@@ -172,7 +172,7 @@ exports.findOrCreateUserProfile = function performFindOrCreateUser(userId, authT
             }
         })
 
-        .then(function findOrCreateUserSuccess(user) {
+        .then(function finishCreate(user) {
             console.log('User find/create successful');
             resolve(user);
         })

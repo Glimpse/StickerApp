@@ -20,6 +20,7 @@ router.get(
                     'Sign Up - after this, authentication should succeed.';
         var note2 = '<p>If instead you want to authenticate using an <b>AAD email account</b>, you will first need to sign up to get one.<br>' +
                     'Once you are signed up, you can then choose to sign in.';
+                    
         res.send('<br><font size="5" color="blue"><b>AAD-B2C Login</b><br></font>Click one of the following to sign in using either an AAD email account or Facebook:<br>' +
                 '<font size="4"><a href="/users/auth/openid/?p=B2C_1_SignIn">Sign In</a><br>' +
                 '<a href="/users/auth/openid/?p=B2C_1_SignUp">Sign Up</a><br></font>' +
