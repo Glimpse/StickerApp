@@ -44,7 +44,7 @@ function connectToAuthDb(){
          //Note: The database must already be created, otherwise you will see an error.
         getSequelize().authenticate()
 
-        .then(function finishConnect(err) {
+        .then(function finishConnect() {
             console.log('Connection has been established successfully.');
             resolve(getSequelize());
         })
@@ -119,13 +119,13 @@ function findUserProfile(userId){
 exports.deleteUserProfile = function performDelete(userId){
 
     //Deletes the user profile from MySQL; this is needed when the user logs out.
-    return new Promise(function (resolve, reject){
+    return new Promise(function findAndDelete(resolve, reject){
 
         findUserProfile(userId)
 
-        .then(function destroy(user){
+        .then(function startDelete(user){
             user.destroy()
-            .then(function finishDestroy(){
+            .then(function finishDelete(){
                 console.log('User deletion successful');
                 resolve();
             });
@@ -138,11 +138,11 @@ exports.deleteUserProfile = function performDelete(userId){
     });
 };
 
-exports.findOrCreateUserProfile = function(userId, authType, displayName, firstName, lastName, email){
+exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType, displayName, firstName, lastName, email){
 
     //When a user is authenticated, checks to see if the user already exists in MySQL; if it doesn't,
     //this user and profile is created.
-    return new Promise(function (resolve, reject){
+    return new Promise(function findOrCreate(resolve, reject){
 
         var tables = getTables();
 
@@ -173,7 +173,7 @@ exports.findOrCreateUserProfile = function(userId, authType, displayName, firstN
             }
         })
 
-        .then(function(user) {
+        .then(function finishCreate(user) {
             console.log('User find/create successful');
             resolve(user);
         })
