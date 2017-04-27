@@ -167,8 +167,7 @@ exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType,
                     profile.setUser(user[0]);
                     return user[0];
                 });
-            }
-            else {
+            } else {
                 return user[0];
             }
         })
