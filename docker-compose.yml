@@ -5,15 +5,34 @@ services:
   stickerapp:
     image: stickerapp:latest
     build:
-      context: .
+      context: ./stickerapp
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production
     ports:
-      - 3000:3000
+      - 3000
     links:
       - mongo
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - 27017
+  stickerauth-apigateway:
+    image: stickerauth-gateway:latest
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      dbConnection__Host: stickerauthdb
+    links:
+      - stickerauthdb
+      - stickerapp
+  stickerauthdb:
+    image: stickerauthdb:latest
+    build:
+      context: ./stickerauthdb
+      dockerfile: Dockerfile
+    ports:
+      - 3306

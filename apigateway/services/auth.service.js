@@ -30,29 +30,41 @@ var getSequelize = (function getSequelize() {
                 dbConnection.database, dbConnection.username, dbConnection.password, {
                     port: dbConnection.port,
                     dialect: 'mysql',
-                    host: dbConnection.host
+                    host: process.env.dbConnection__Host || dbConnection.host
                 });
         }
         return dbSequelize;
     };
 })();
 
-function connectToAuthDb(){
-
+function connectToAuthDb() {
     return new Promise(function connect(resolve, reject) {
+        var retryCount = dbConnection.retryCount;
+        var retryIntervalMS = dbConnection.retryIntervalMS;
 
-         //Note: The database must already be created, otherwise you will see an error.
-        getSequelize().authenticate()
+        var tryAuthenticate = function tryAuthenticate() {
+            //Note: The database must already be created, otherwise you will see an error.
+            getSequelize().authenticate()
 
-        .then(function finishConnect() {
-            console.log('Connection has been established successfully.');
-            resolve(getSequelize());
-        })
+                .then(function finishConnect() {
+                    console.log('Connection has been established successfully.');
+                    resolve(getSequelize());
+                })
 
-        .catch(function catchError(err) {
-            console.log('Unable to connect to the database:', err);
-            reject(err);
-        });
+                .catch(function catchError(err) {
+                    // There are some timing issues when spinning up docker-compose environments
+                    // since MySql takes some time to start and create the initial schema.
+                    // Allow a limited number of retries to work around that problem.
+                    if (retryCount-- > 0) {
+                        console.log('Could not connect to database; trying again in ' + retryIntervalMS + ' MS');
+                        console.log('Retries remaining: ' + retryCount);
+                        setTimeout(tryAuthenticate, retryIntervalMS)
+                    } else {
+                        console.log('Unable to connect to the database:', err);
+                        reject(err);
+                    }
+                });
+        }();
     });
 }
 

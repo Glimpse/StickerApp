@@ -8,6 +8,8 @@ exports.dbConnection = {
     host: 'localhost',
     database: 'StickerAuthDB',
     username: 'root',
-    password: 'Admin_007'
+    password: '',
+    retryCount: 5,
+    retryIntervalMS: 5000
 };
 

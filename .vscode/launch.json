@@ -13,9 +13,20 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach to Port",
+            "name": "Attach to StickerApp",
+            "port": 5858,
             "address": "localhost",
-            "port": 5858
+            "localRoot": "${workspaceRoot}/stickerapp/",
+            "remoteRoot": "/usr/src/app/"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to ApiGateway",
+            "address": "localhost",
+            "localRoot": "${workspaceRoot}/apigateway/",
+            "remoteRoot": "/usr/src/app/",
+            "port": 5859
         }
     ]
 }

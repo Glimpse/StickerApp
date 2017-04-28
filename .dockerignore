@@ -1,0 +1,6 @@
+# Don't place Docker files in images
+Dockerfile
+docker-compose*
+
+# Node modules will be restored; don't copy
+node_modules

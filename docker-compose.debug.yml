@@ -1,23 +1,47 @@
-
 version: '2'
 
 services:
   stickerapp:
     image: stickerapp:latest
     build:
-      context: .
+      context: ./stickerapp
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
     ports:
-      - 3000:3000
+      # Change the port so that both stickerapp and apigateway
+      # can be exposed for users to hit directly in debug scenarios
+      - 3001:3000
       - 5858:5858
     volumes:
-      - .:/usr/src/app
-    command: node --debug=5858 server/index.js
+      - ./stickerapp:/usr/src/app
+    command: node --debug=0.0.0.0:5858 server/index.js
     links:
       - mongo
   mongo:
     image: mongo
     ports:
       - 27017:27017
+  stickerauth-apigateway:
+    image: stickerauth-gateway:latest
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    ports:
+      - 5859:5859
+      - 3000:3000
+    environment:
+      dbConnection__Host: stickerauthdb
+    volumes:
+      - ./apigateway:/usr/src/app      
+    command: node --debug=0.0.0.0:5859 ./bin/www      
+    links:
+      - stickerauthdb
+      - stickerapp
+  stickerauthdb:
+    image: stickerauthdb:latest
+    build:
+      context: ./stickerauthdb
+      dockerfile: Dockerfile
+    ports:
+      - 3306:3306      
