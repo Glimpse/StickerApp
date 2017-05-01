@@ -48,24 +48,7 @@ exports.creds = {
     cookieEncryptionKeys: [
       { 'key': '12345678901234567890123456789012', 'iv': '123456789012' },
       { 'key': 'abcdefghijklmnopqrstuvwxyzabcdef', 'iv': 'abcdefghijkl' }
-    ],
-
-    // Optional. The additional scope you want besides 'openid'
-    // (1) if you want refresh_token, use 'offline_access'
-    // (2) if you want access_token, use the clientID
-    scope: ['offline_access'],
-
-    // Optional, 'error', 'warn' or 'info'
-    loggingLevel: 'info',
-
-    // Optional. The lifetime of nonce in session or cookie, the default value is 3600 (seconds).
-    nonceLifetime: null,
-
-    // Optional. The max amount of nonce saved in session or cookie, the default value is 10.
-    nonceMaxAmount: 5,
-
-    // Optional. The clock skew allowed in token validation, the default value is 300 seconds.
-    clockSkew: null
+    ]
 };
 
 // The url you need to go to destroy the session with AAD,
@@ -75,4 +58,3 @@ exports.destroySessionUrl =
   'https://login.microsoftonline.com/StickerDemoB2CTenant.onmicrosoft.com/oauth2/v2.0/logout' +
   '?p=B2C_1_SignIn' +
   '&post_logout_redirect_uri=http://localhost:3000';
-

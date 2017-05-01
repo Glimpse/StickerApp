@@ -18,13 +18,8 @@ module.exports = function getOIDStrategy() {
         isB2C: config.creds.isB2C,
         issuer: config.creds.issuer,
         passReqToCallback: config.creds.passReqToCallback,
-        scope: config.creds.scope,
-        loggingLevel: config.creds.loggingLevel,
-        nonceLifetime: config.creds.nonceLifetime,
-        nonceMaxAmount: config.creds.nonceMaxAmount,
         useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
         cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
-        clockSkew: config.creds.clockSkew
     },
     function verify(iss, sub, profile, accessToken, refreshToken, done) {
         if (!profile.oid) {

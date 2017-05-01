@@ -3,185 +3,82 @@ var dbConnection = require('../config/database-config').dbConnection;
 var userModel = require('../models/user');
 var profileModel = require('../models/profile');
 
-var getTables = (function getTables(){
-    var tables = null;
+var sequelize = new Sequelize(
+    dbConnection.database, dbConnection.username, dbConnection.password, 
+    {
+        port: dbConnection.port,
+        dialect: 'mysql',
+        host: dbConnection.host
+    }
+);
 
-    //The User and Profile tables share a compositional relationship and are used to store the authenticated
-    //user's information.  Passport then stores\retrieves the authenticated user data to\from MySQL based on the user id
-    //that is stored in the server session - this is so that the user only has to log in once.
-    return function initTables() {
-        if (!tables){
-            tables = {
-                profileTable: profileModel(getSequelize()).Profile,
-                userTable: userModel(getSequelize()).User
-            };
-        }
-        return tables;
-    };
-})();
-
-var getSequelize = (function getSequelize() {
-    var dbSequelize = null;
-
-    //Connects Sequelize for use with our MySQL db.
-    return function initSequelize() {
-        if (!dbSequelize) {
-            dbSequelize = new Sequelize(
-                dbConnection.database, dbConnection.username, dbConnection.password, {
-                    port: dbConnection.port,
-                    dialect: 'mysql',
-                    host: dbConnection.host
-                });
-        }
-        return dbSequelize;
-    };
-})();
-
-function connectToAuthDb(){
-
-    return new Promise(function connect(resolve, reject) {
-
-         //Note: The database must already be created, otherwise you will see an error.
-        getSequelize().authenticate()
-
-        .then(function finishConnect() {
-            console.log('Connection has been established successfully.');
-            resolve(getSequelize());
-        })
-
-        .catch(function catchError(err) {
-            console.log('Unable to connect to the database:', err);
-            reject(err);
-        });
-    });
-}
-
-function createUserProfileSchema(){
-
-    return new Promise(function defineTables(resolve, reject){
-
-        //Creates the User\Profile tables and their shared relationship.
-        var tables = getTables();
-        tables.userTable.associate(tables.profileTable);
-        tables.profileTable.associate(tables.userTable);
-
-        getSequelize().sync()
-
-        .then(function finishDefineTables() {
-            console.log('Schema creation succeeded');
-            resolve();
-        })
-
-        .catch(function catchError(err) {
-            console.log('Schema creation failed:' + err);
-            reject(err);
-        });
-    });
-}
+var tables = {
+    profileTable: profileModel(sequelize).profile,
+    userTable: userModel(sequelize).user
+};
 
 exports.setupAuthDataStore = function setup() {
-
-    connectToAuthDb()
-    
-    .then(function finishSetup() {
-        createUserProfileSchema();
+    sequelize.authenticate()
+    .then(function finishSchema() {
+        //The User and Profile tables share a compositional relationship and are used to store the authenticated
+        //user's information.  Passport then stores\retrieves the authenticated user data to\from MySQL based on the user id
+        //that is stored in the server session - this is so that the user only has to log in once.
+        tables.userTable.associate(tables.profileTable);
+        tables.profileTable.associate(tables.userTable);
+        return sequelize.sync()
+    })
+    .catch(function catchError(err) {
+        console.log('User/Profile schema creation failed:' + err);
     });
 };
 
 exports.findUserProfile = findUserProfile;
 function findUserProfile(userId){
-
     //Attempts to find the authenticated user in MySQL by their id; this is the id that is stored within the
     //server side session.
-    return new Promise(function find(resolve, reject){
-
-        getTables().userTable.findById(
-            userId,
-            {include: [{model: getTables().profileTable}]})
-            
-         .then(function finishFind(user){
-             if (user) {
-                 console.log('User profile found');
-                 resolve(user);
-             } else {
-                 console.log('User profile not found');
-                 reject(user);
-             }
-         })
-
-         .catch(function catchError(err){
-             console.log('User profile not found:' + err);
-             reject(err);
-         });
-    });
+    return tables.userTable.findById(userId, {include: [{model: tables.profileTable}]})
 }
 
 exports.deleteUserProfile = function performDelete(userId){
-
     //Deletes the user profile from MySQL; this is needed when the user logs out.
-    return new Promise(function findAndDelete(resolve, reject){
-
-        findUserProfile(userId)
-
-        .then(function startDelete(user){
-            user.destroy()
-            .then(function finishDelete(){
-                console.log('User deletion successful');
-                resolve();
-            });
-        })
-
-        .catch(function catchError(err){
-            console.log('User deletion failed:' + err);
-            reject(err);
-        });
+    return findUserProfile(userId)
+    .then(function finishDelete(user){
+        user.destroy()
+        return user;
+    })
+    .catch(function catchError(err){
+        console.log('User deletion failed:' + err);
     });
 };
 
 exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType, displayName, firstName, lastName, email){
-
     //When a user is authenticated, checks to see if the user already exists in MySQL; if it doesn't,
     //this user and profile is created.
-    return new Promise(function findOrCreate(resolve, reject){
+    return tables.userTable.findOrCreate({
+        where: {id: userId},
+        include: [{model: tables.profileTable}],
+        defaults: {id: userId, authType: authType}})
+    .then(function findOrCreateProfile(user){
+        if (!user || user.length == 0) {
+            throw new Error('User find or create failed');
+        }
+        if (user[0].profile) {
+            return user[0];
+        }
 
-        var tables = getTables();
-
-        tables.userTable.findOrCreate({
-            where: {id: userId},
-            include: [{model: tables.profileTable}],
-            defaults: {id: userId, authType: authType}})
-
-        .then(function create(user){
-            if (!user || user.length == 0) {
-                throw new Error('User find or create failed');
-            }
-
-            if (!user[0].profile){
-                return tables.profileTable.create({
-                    displayName: displayName,
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email
-                })
-                .then(function associate(profile) {
-                    profile.setUser(user[0]);
-                    return user[0];
-                });
-            }
-            else {
-                return user[0];
-            }
+        return tables.profileTable.create({
+            displayName: displayName,
+            firstName: firstName,
+            lastName: lastName,
+            email: email
         })
-
-        .then(function finishCreate(user) {
-            console.log('User find/create successful');
-            resolve(user);
-        })
-
-        .catch(function catchError(err) {
-            console.log('User find/create failed:' + err);
-            reject(err);
+        .then(function associate(profile) {
+            profile.setUser(user[0]);
+            return user[0];
         });
+    })
+    .catch(function catchError(err) {
+        console.log('User/Profile find or create failed:' + err);
     });
 };
 

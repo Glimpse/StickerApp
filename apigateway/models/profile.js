@@ -21,6 +21,6 @@ module.exports = function defineProfile(sequelize)
             }
         });
 
-    return { Profile: profile};
+    return { profile };
 };
 

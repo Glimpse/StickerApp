@@ -7,9 +7,9 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var authService = require('./services/auth.service');
 
-var index = require('./routes/index.route');
-var users = require('./routes/users.route');
-var profile = require('./routes/profile.route');
+var index = require('./routes/index');
+var users = require('./routes/users');
+var profile = require('./routes/profile');
 var app = express();
 
 require('./strategy/aad-b2c')();
