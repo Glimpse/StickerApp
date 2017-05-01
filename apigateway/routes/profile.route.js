@@ -7,7 +7,7 @@ var authService = require('../services/auth.service');
 router.get('/', authService.isUserLoggedIn, function showProfile(req, res) {
     res.send('Welcome!<br>'
         + '<br>Display Name: ' + req.user.profile.displayName
-        + '<br>First Name: ' + req.user.profile.lastName
+        + '<br>First Name: ' + req.user.profile.firstName
         + '<br>Last Name: ' + req.user.profile.lastName
         + '<br><a href="/users/auth/openid/logout">AAD-B2C Logout</a><br>');
 });

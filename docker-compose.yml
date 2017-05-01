@@ -25,7 +25,8 @@ services:
     ports:
       - 3000:3000
     environment:
-      dbConnection__Host: stickerauthdb
+      - dbConnection__Host=stickerauthdb
+      - StickerAppClientUrl=http://stickerapp:3000
     links:
       - stickerauthdb
       - stickerapp
