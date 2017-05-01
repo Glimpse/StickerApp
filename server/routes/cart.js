@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dataAccess = require('../db/data-access');
 
-const router = new express.Router();
+const router = express.Router();
 
 router.use(bodyParser.json());
 
