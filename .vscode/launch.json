@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch API Gateway",
-            "program": "${workspaceRoot}\\apigateway\\bin\\www"
+            "program": "${workspaceRoot}\\apigateway\\app.js"
         },
         {
             "type": "node",

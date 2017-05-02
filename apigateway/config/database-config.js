@@ -3,11 +3,12 @@
 //e.g. process.env.DB_URL or something equivalent
 
 //TODO: Add info in instructions that the MySQL db needs to be created by the user first
-exports.dbConnection = {
-    port: 3306,
-    host: 'localhost',
-    database: 'StickerAuthDB',
-    username: 'root',
-    password: 'Admin_007'
+exports.dbSettings = {
+    URI: process.env.DB_URL || "mysql://root:Admin_007@localhost/StickerDemoApp"
 };
+
+exports.serverConnection = {
+    port: 3000
+}
+
 

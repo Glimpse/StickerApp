@@ -1,31 +1,24 @@
 var Sequelize = require('sequelize');
-var dbConnection = require('../config/database-config').dbConnection;
+var dbSettings = require('../config/database-config').dbSettings;
 var userModel = require('../models/user');
 var profileModel = require('../models/profile');
 
-var sequelize = new Sequelize(
-    dbConnection.database, dbConnection.username, dbConnection.password,
-    {
-        port: dbConnection.port,
-        dialect: 'mysql',
-        host: dbConnection.host
-    }
-);
+var sql = new Sequelize(dbSettings.URI);
 
 var tables = {
-    profileTable: profileModel(sequelize).profile,
-    userTable: userModel(sequelize).user
+    profileTable: profileModel(sql).profile,
+    userTable: userModel(sql).user
 };
 
 exports.setupAuthDataStore = function setup() {
-    sequelize.authenticate()
+    sql.authenticate()
     .then(function finishSchema() {
         //The User and Profile tables share a compositional relationship and are used to store the authenticated
         //user's information.  Passport then stores\retrieves the authenticated user data to\from MySQL based on the user id
         //that is stored in the server session - this is so that the user only has to log in once.
         tables.userTable.associate(tables.profileTable);
         tables.profileTable.associate(tables.userTable);
-        return sequelize.sync();
+        return sql.sync();
     })
     .catch(function catchError(err) {
         console.log('User/Profile schema creation failed:' + err);

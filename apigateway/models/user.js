@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-module.exports = function defineUser(sequelize)
+module.exports = function defineUser(sql)
 {
-    var user = sequelize.define('user', {
+    var user = sql.define('user', {
         id: {
             type: Sequelize.STRING,
             primaryKey: true

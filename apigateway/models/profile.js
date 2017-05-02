@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
-module.exports = function defineProfile(sequelize)
+module.exports = function defineProfile(sql)
 {
-    var profile = sequelize.define('profile', {
+    var profile = sql.define('profile', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
