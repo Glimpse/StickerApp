@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = function defineUser(sql)
-{
+module.exports = function defineUser(sql) {
     var user = sql.define('user', {
         id: {
             type: Sequelize.STRING,
