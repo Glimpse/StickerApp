@@ -3,12 +3,11 @@ var router = express.Router();
 var passport = require('passport');
 var authService = require('../services/auth');
 var config = require('../config/aad-b2c-config');
-var bodyParser = require('body-parser');
 
 //Uses passport.authenticate() as route middleware to authenticate the
 //request. After the user is authenticated, the authentication provider
 //redirects the user back to this application at /auth/openid/return.
-router.get('/auth/login',
+router.get('/auth',
   function authenticate(req, res, next) {
       passport.authenticate('azuread-openidconnect',
           {
@@ -24,29 +23,29 @@ router.get('/auth/login',
   });
 
 //Called by POST /auth/return.
-authenticate = function(req, res, next) {
+var authenticate = function authenticate(req, res, next) {
     
     //Check to see if the user has chosen to reset their password
     var error = req.body['error_description'];
     if (error && error.indexOf('AADB2C90118') != -1) {
         //Redirect to the password reset policy so that the user can reset their password
-        res.redirect('/users/auth/?p=B2C_1_PasswordReset');
+        res.redirect('/users/auth?p=B2C_1_PasswordReset');
     }
 
     else{
         passport.authenticate('azuread-openidconnect',
-        {
-            response: res,
-            failureRedirect: '/fail'
-        })(req, res, next);
+            {
+                response: res,
+                failureRedirect: '/fail'
+            })(req, res, next);
     }
- };
+};
 
 //Called by POST /auth/return.
- showProfile = function(req, res, next) {
-        console.log('Received return from Azure AD.');
-      res.redirect('/profile');
- };
+var showProfile = function showProfile(req, res) {
+    console.log('Received return from Azure AD.');
+    res.redirect('/profile');
+};
 
 //Uses passport.authenticate() as route middleware to authenticate the
 //request.  One of the following will happen:

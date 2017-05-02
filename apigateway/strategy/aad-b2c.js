@@ -19,8 +19,7 @@ module.exports = function getOIDStrategy() {
         issuer: config.creds.issuer,
         passReqToCallback: config.creds.passReqToCallback,
         useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
-        cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
-    },
+        cookieEncryptionKeys: config.creds.cookieEncryptionKeys},
     function verify(iss, sub, profile, accessToken, refreshToken, done) {
         if (!profile.oid) {
             return done(new Error('No oid found'), null);

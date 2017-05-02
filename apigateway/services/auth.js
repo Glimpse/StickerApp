@@ -4,7 +4,7 @@ var userModel = require('../models/user');
 var profileModel = require('../models/profile');
 
 var sequelize = new Sequelize(
-    dbConnection.database, dbConnection.username, dbConnection.password, 
+    dbConnection.database, dbConnection.username, dbConnection.password,
     {
         port: dbConnection.port,
         dialect: 'mysql',
@@ -25,7 +25,7 @@ exports.setupAuthDataStore = function setup() {
         //that is stored in the server session - this is so that the user only has to log in once.
         tables.userTable.associate(tables.profileTable);
         tables.profileTable.associate(tables.userTable);
-        return sequelize.sync()
+        return sequelize.sync();
     })
     .catch(function catchError(err) {
         console.log('User/Profile schema creation failed:' + err);
@@ -36,14 +36,14 @@ exports.findUserProfile = findUserProfile;
 function findUserProfile(userId){
     //Attempts to find the authenticated user in MySQL by their id; this is the id that is stored within the
     //server side session.
-    return tables.userTable.findById(userId, {include: [{model: tables.profileTable}]})
+    return tables.userTable.findById(userId, {include: [{model: tables.profileTable}]});
 }
 
 exports.deleteUserProfile = function performDelete(userId){
     //Deletes the user profile from MySQL; this is needed when the user logs out.
     return findUserProfile(userId)
     .then(function finishDelete(user){
-        user.destroy()
+        user.destroy();
         return user;
     })
     .catch(function catchError(err){

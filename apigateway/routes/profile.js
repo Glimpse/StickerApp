@@ -6,10 +6,10 @@ var authService = require('../services/auth');
 //this will be removed from the final sample
 router.get('/', authService.isUserLoggedIn, function showProfile(req, res) {
     res.send('Welcome!<br>'
-        + '<br>Display Name: ' + req.user.profile.displayName
-        + '<br>First Name: ' + req.user.profile.lastName
-        + '<br>Last Name: ' + req.user.profile.lastName
-        + '<br><a href="/users/auth/logout">AAD-B2C Logout</a><br>');
+    + '<br>Display Name: ' + req.user.profile.displayName
+    + '<br>First Name: ' + req.user.profile.lastName
+    + '<br>Last Name: ' + req.user.profile.lastName
+    + '<br><a href="/users/auth/logout">AAD-B2C Logout</a><br>');
 });
 
 module.exports = router;
