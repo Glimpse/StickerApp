@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const express = require('express');
 const request = require('request');
-const router = new express.Router();
+const router = express.Router();
 
 const nobodyAuthorRegex = /nobody@flickr.com \((.*)\)/;
 
