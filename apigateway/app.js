@@ -5,6 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var proxy = require('express-http-proxy');
+
+var forwardAuthHeader = require('./middleware/authForwarding')();
 var authService = require('./services/auth');
 var serverConnection = require('./config/database-config').serverConnection;
 
@@ -26,14 +29,20 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', index);
+app.use('/gatewayTest', index);
 app.use('/users', users);
 app.use('/profile', profile);
+
+// At this point, no routes specific to this service will handle the request,
+// so store user identity (if any) in a header before proceeding.
+app.use(forwardAuthHeader);
+
+// Inter-service routing
+app.use('/',  proxy(process.env.StickerAppClientUrl || serviceEndpoints.stickerAppClientUrl))
 
 // setup the auth's datastore where authenticated user\profile data is stored
 authService.setupAuthDataStore();
