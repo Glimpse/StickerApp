@@ -6,5 +6,4 @@ RUN mkdir -p /usr/src/app && mv /tmp/node_modules /usr/src
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 EXPOSE 3000
-EXPOSE 5859
 CMD npm start

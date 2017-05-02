@@ -7,5 +7,4 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 RUN /usr/src/node_modules/.bin/gulp build
 EXPOSE 3000
-EXPOSE 5858
 CMD npm start
