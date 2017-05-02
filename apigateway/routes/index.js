@@ -8,7 +8,7 @@ router.get(
     function showLogin(req, res) {
 
          res.send('<br><font size="5" color="blue"><b>AAD-B2C Login</b><br></font>' + 
-                  '<a href="/users/auth/openid/?p=B2C_1_SignInAndUp">Log In w/ AAD or Facebook</a>');
+                  '<a href="/users/auth/login?p=B2C_1_SignInAndSignUp">Log In w/ AAD or Facebook</a>');
     }
 );
 

@@ -1,7 +1,7 @@
 var passport = require('passport');
 var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 var config = require('../config/aad-b2c-config');
-var authService = require('../services/auth.service');
+var authService = require('../services/auth');
 
 module.exports = function getOIDStrategy() {
 

@@ -1,5 +1,5 @@
 var passport = require('passport');
-var authService = require('../services/auth.service');
+var authService = require('../services/auth');
 
 module.exports = function getSetUser() {
 
