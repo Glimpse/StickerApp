@@ -8,14 +8,12 @@ var passport = require('passport');
 var proxy = require('express-http-proxy');
 
 var forwardAuthHeader = require('./middleware/authForwarding')();
-var authService = require('./services/auth.service');
+var authService = require('./services/auth');
+var serverConnection = require('./config/database-config').serverConnection;
 
-var index = require('./routes/index.route');
-var users = require('./routes/users.route');
-var profile = require('./routes/profile.route');
-
-var serviceEndpoints = require('./config/services-config');
-
+var index = require('./routes/index');
+var users = require('./routes/users');
+var profile = require('./routes/profile');
 var app = express();
 
 require('./strategy/aad-b2c')();
@@ -48,5 +46,9 @@ app.use('/',  proxy(process.env.StickerAppClientUrl || serviceEndpoints.stickerA
 
 // setup the auth's datastore where authenticated user\profile data is stored
 authService.setupAuthDataStore();
+
+const server = app.listen(serverConnection.port, () => {
+    console.log(`Sticker server running on port ${server.address().port}`);
+});
 
 module.exports = app;

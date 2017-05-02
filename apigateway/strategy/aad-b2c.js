@@ -1,7 +1,7 @@
 var passport = require('passport');
 var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 var config = require('../config/aad-b2c-config');
-var authService = require('../services/auth.service');
+var authService = require('../services/auth');
 
 module.exports = function getOIDStrategy() {
 
@@ -18,14 +18,8 @@ module.exports = function getOIDStrategy() {
         isB2C: config.creds.isB2C,
         issuer: config.creds.issuer,
         passReqToCallback: config.creds.passReqToCallback,
-        scope: config.creds.scope,
-        loggingLevel: config.creds.loggingLevel,
-        nonceLifetime: config.creds.nonceLifetime,
-        nonceMaxAmount: config.creds.nonceMaxAmount,
         useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
-        cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
-        clockSkew: config.creds.clockSkew
-    },
+        cookieEncryptionKeys: config.creds.cookieEncryptionKeys},
     function verify(iss, sub, profile, accessToken, refreshToken, done) {
         if (!profile.oid) {
             return done(new Error('No oid found'), null);

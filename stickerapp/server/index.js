@@ -19,7 +19,7 @@ const PROJECT_ROOT = path.join(__dirname, '..');
 app.set('etag', false);
 
 app.set('views', path.join(PROJECT_ROOT, 'templates'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(express.static(path.join(PROJECT_ROOT, 'client', 'dist')));
 

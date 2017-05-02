@@ -1,7 +1,7 @@
-var Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 
-module.exports = function defineUser(sequelize) {
-    var user = sequelize.define('user', {
+module.exports = function defineUser(sql) {
+    var user = sql.define('user', {
         id: {
             type: Sequelize.STRING,
             primaryKey: true
@@ -15,7 +15,5 @@ module.exports = function defineUser(sequelize) {
     }
     });
 
-    return  {
-        User: user
-    };
+    return  { user };
 };

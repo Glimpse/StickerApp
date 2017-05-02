@@ -1,7 +1,7 @@
-var Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 
-module.exports = function defineProfile(sequelize) {
-    var profile = sequelize.define('profile', {
+module.exports = function defineProfile(sql) {
+    var profile = sql.define('profile', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -20,6 +20,6 @@ module.exports = function defineProfile(sequelize) {
             }
         });
 
-    return { Profile: profile};
+    return { profile };
 };
 

@@ -25,7 +25,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - dbConnection__Host=stickerauthdb
+      - DB_URL=mysql://root@stickerauthdb/StickerDemoApp
       - StickerAppClientUrl=http://stickerapp:3000
     links:
       - stickerauthdb

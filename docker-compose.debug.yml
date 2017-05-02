@@ -31,11 +31,11 @@ services:
       - 5859:5859
       - 3000:3000
     environment:
-      - dbConnection__Host=stickerauthdb
+      - DB_URL=mysql://root@stickerauthdb/StickerDemoApp
       - StickerAppClientUrl=http://stickerapp:3000
     volumes:
       - ./apigateway:/usr/src/app      
-    command: node --debug=0.0.0.0:5859 ./bin/www      
+    command: node --debug=0.0.0.0:5859 app.js      
     links:
       - stickerauthdb
       - stickerapp
