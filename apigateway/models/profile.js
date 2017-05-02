@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = function defineProfile(sql)
-{
+module.exports = function defineProfile(sql) {
     var profile = sql.define('profile', {
         id: {
             type: Sequelize.INTEGER,

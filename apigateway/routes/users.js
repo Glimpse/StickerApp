@@ -30,9 +30,7 @@ var authenticate = function authenticate(req, res, next) {
     if (error && error.indexOf('AADB2C90118') != -1) {
         //Redirect to the password reset policy so that the user can reset their password
         res.redirect('/users/auth?p=B2C_1_PasswordReset');
-    }
-
-    else{
+    } else {
         passport.authenticate('azuread-openidconnect',
             {
                 response: res,

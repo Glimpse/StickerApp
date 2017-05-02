@@ -127,7 +127,7 @@ gulp.task('lint-gateway', function lintGateway() {
     // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
     // write some output to the wrong directory.  I don't understand why, but not returning anything
     // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src(['./apigateway/**/*', '!./apigateway/node_modules/**/*'])
+    gulp.src(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*'])
         // eslint() attaches the lint output to the "eslint" property
         // of the file object so it can be used by other modules.
         .pipe(eslint(config))
