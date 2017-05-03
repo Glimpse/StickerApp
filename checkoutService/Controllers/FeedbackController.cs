@@ -27,10 +27,10 @@ namespace CheckoutService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var feedbackEntry = await _database.GetFeedbackCollection().Find(f => f.Id == id).ToListAsync();
-            if (feedbackEntry.Count > 0)
+            var feedbackEntry = await _database.GetFeedbackCollection().Find(f => f.Id == id).FirstOrDefaultAsync();
+            if (feedbackEntry != null)
             {
-                return new ObjectResult(feedbackEntry[0]);
+                return new ObjectResult(feedbackEntry);
             }
             else
             {

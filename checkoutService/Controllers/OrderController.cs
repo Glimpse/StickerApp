@@ -27,10 +27,10 @@ namespace CheckoutService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var order = await _database.GetOrderCollection().Find(o => o.Id == id).ToListAsync();
-            if (order.Count > 0)
+            var order = await _database.GetOrderCollection().Find(o => o.Id == id).FirstOrDefaultAsync();
+            if (order != null)
             {
-                return new ObjectResult(order[0]);
+                return new ObjectResult(order);
             }
             else
             {
