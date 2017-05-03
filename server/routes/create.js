@@ -3,14 +3,14 @@
 const crypto = require('crypto');
 const express = require('express');
 const request = require('request');
-const router = new express.Router();
+const router = express.Router();
 
 const nobodyAuthorRegex = /nobody@flickr.com \((.*)\)/;
 
 router.get('/', function stickerRouteCreate(req, res) {
     const renderData = { pageTitle: 'Create', entry: 'create' };
 
-    console.log('Render values: ', renderData)
+    console.log('Render values: ', renderData);
 
     res.render('index', renderData);
 });
