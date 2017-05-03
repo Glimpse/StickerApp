@@ -2,11 +2,12 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const router = new express.Router();
+const router = express.Router();
 
 const dataAccess = require('../db/data-access');
-const metadata = require('../middleware/metadata');
-const cookie = require('../middleware/cookie');
+
+// const metadata = require('../middleware/metadata');
+// const cookie = require('../middleware/cookie');
 
 //router.use(metadata());
 //router.use(cookie());
