@@ -42,7 +42,7 @@ app.use('/profile', profile);
 app.use(forwardAuthHeader);
 
 // Inter-service routing
-app.use('/',  proxy(process.env.StickerAppClientUrl || serviceEndpoints.stickerAppClientUrl))
+app.use('/',  proxy(process.env.StickerAppClientUrl || serviceEndpoints.stickerAppClientUrl));
 
 // setup the auth's datastore where authenticated user\profile data is stored
 authService.setupAuthDataStore();
