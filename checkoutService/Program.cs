@@ -13,6 +13,9 @@ namespace CheckoutService
     {
         public static void Main(string[] args)
         {
+            //The ConfigurationBuilder allows you to customize settings, such as the kestrel server's
+            //url, by specifying these settings via "ASPNETCORE_" environment variables or passing them as a command line
+            //argument.
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")

@@ -1,0 +1,7 @@
+{
+    "port": 27017,
+    "dbName": "CheckoutDB",
+    "host": "localhost",
+    "orderCollectionName": "orders",
+    "feedbackCollectionName": "feedbackEntries"
+}
