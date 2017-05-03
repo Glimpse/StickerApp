@@ -1,6 +1,7 @@
 import dispatcher from '../dispatcher';
 import { BROWSE_ACTIONS } from './actions.js';
 import { updateItems } from '../utils/api/browse-api';
+import { recordStickerView } from '../utils/api/history-api';
 
 const tags = [];
 
@@ -26,6 +27,7 @@ export function createRemoveTagFilterAction(tag) {
 }
 
 export function createExpandItemAction(id) {
+    recordStickerView(id);
     dispatcher.dispatch({
         actionType: BROWSE_ACTIONS.EXPAND_ITEM_ACTION,
         id

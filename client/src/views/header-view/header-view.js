@@ -47,6 +47,11 @@ export default React.createClass({
                             'gs-header-navbar-hover-enabled': this.props.pageName !== 'browse',
                             'gs-header-navbar-link-active': this.props.pageName === 'browse'
                         })}>Browse Stickers</a>
+                        <a href="/trending" className={classname({
+                            'gs-header-navbar-link': true,
+                            'gs-header-navbar-hover-enabled': this.props.pageName !== 'trending',
+                            'gs-header-navbar-link-active': this.props.pageName === 'trending'
+                        })}>Trending Stickers</a>
                         <a href="/create" className={classname({
                             'gs-header-navbar-link': true,
                             'gs-header-navbar-hover-enabled': this.props.pageName !== 'create',
