@@ -22,7 +22,18 @@
         "no-unreachable": "warn",
         "no-unused-vars": "warn",
         "constructor-super": "warn",
-        "valid-typeof": "warn"
-        
+        "valid-typeof": "warn",
+        "camelcase": "error",
+        "curly": "error",
+        "func-names": "error",
+        "space-in-parens": "error",
+        "no-console": "off",
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true}],
+        "comma-spacing": ["error", { "before": false, "after": true }] ,
+        "indent": ["error", 4, { "SwitchCase": 1 } ] ,
+        "no-trailing-spaces": ["error", { "skipBlankLines" : true } ] ,
+        "quotes": ["error", "single", "avoid-escape"] ,
+        "semi": ["error", "always" ],
+        "semi-spacing": ["error", { "before": false, "after": true } ] 
     }
 }

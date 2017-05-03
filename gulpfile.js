@@ -6,7 +6,7 @@ var gulp = require('gulp');
 var del = require('del');
 var webpack = require('webpack');
 var eslint = require('gulp-eslint');
-var eslintConfig = require('./eslint.config.js');
+var eslintConfig = require('./.eslintrc.json');
 
 gulp.task('populate-mongodb', function populateMongoDb(cb) {
     process.argv.push('--config', path.join(__dirname, 'config.mongodb.json'));
@@ -110,7 +110,7 @@ gulp.task('lint-server', function lintServer() {
 
 gulp.task('lint-gateway', function lintGateway() {
     var config = _.assign({
-         parserOptions: {
+        parserOptions: {
             ecmaVersion: 6,
             sourceType: 'module',
             ecmaFeatures: {
