@@ -1,5 +1,4 @@
-
-FROM node:latest
+FROM mhart/alpine-node
 LABEL Name=stickerapp Version=0.19.0 
 COPY package.json /tmp/package.json
 RUN cd /tmp && npm install
