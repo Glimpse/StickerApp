@@ -99,7 +99,6 @@ function getSticker(id, cb) {
     console.log('mongodb.js: getSticker');
     mongoClient.connect(url, (err, db) => {
         if (err) { throw err; }
-
         dbReadOneDoc(db, mongoConfig.stickerCollectionName, { id }, (result) => {
             db.close();
             cb(result);
@@ -217,8 +216,6 @@ function addFeedback(doc, cb) {
 
 function initializeDatabase(cb) {
     console.log('mongodb.js: initializeDatabase');
-    
-    
     mongoClient.connect(url, (err, db) => {
         if (err) { throw err; }
         dbDropCollection(db, mongoConfig.stickerCollectionName);
