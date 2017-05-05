@@ -19,7 +19,8 @@
     "react-dom": "^15.0.1",
     "react-fa": "^4.0.1",
     "request": "^2.69.0",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "mongodb-uri": "^0.9.7"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",

@@ -1,9 +1,16 @@
 'use strict';
 
+
 const mongoClient = require('mongodb').MongoClient;
 const mongoConfig = require('../../config').mongodb;
-const url = `mongodb://localhost:${mongoConfig.port}/${mongoConfig.dbName}`;
 const initialData = require('../initial-data');
+const mongodbUri = require('mongodb-uri');
+
+// parse the mongodb url to add the database if necessary
+var url = process.env.MONGODB_URL || `mongodb://${mongoConfig.host}:${mongoConfig.port}`;
+let urlObject = mongodbUri.parse(url);
+urlObject.database = mongoConfig.dbName;
+url = mongodbUri.format(urlObject);
 
 // This supports adding either a single doc or an array of docs
 function dbInsertDocs(db, collectionName, doc, cb) {
@@ -92,6 +99,7 @@ function getSticker(id, cb) {
     console.log('mongodb.js: getSticker');
     mongoClient.connect(url, (err, db) => {
         if (err) { throw err; }
+
         dbReadOneDoc(db, mongoConfig.stickerCollectionName, { id }, (result) => {
             db.close();
             cb(result);
@@ -209,6 +217,8 @@ function addFeedback(doc, cb) {
 
 function initializeDatabase(cb) {
     console.log('mongodb.js: initializeDatabase');
+    
+    
     mongoClient.connect(url, (err, db) => {
         if (err) { throw err; }
         dbDropCollection(db, mongoConfig.stickerCollectionName);
