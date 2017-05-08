@@ -1,4 +1,4 @@
-FROM mhart/alpine-node AS base
+FROM mhart/alpine-node:6 AS base
 WORKDIR /usr/src/app
 COPY package.json .
 
@@ -16,6 +16,8 @@ RUN cp -R client/dist prod_client
 FROM base AS release
 COPY --from=dependencies /usr/src/app/prod_node_modules ./node_modules
 COPY --from=build /usr/src/app/prod_client ./client/dist
-COPY . .
+COPY ./server ./server
+COPY ./client ./client
+COPY ./templates ./templates
 EXPOSE 3000
-CMD npm run start
+CMD npm start
