@@ -6,16 +6,27 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "Launch API Gateway",
-            "program": "${workspaceRoot}\\apigateway\\app.js"
+            "request": "attach",
+            "name": "Debug a Container",
+            "address": "localhost",
+            "port": 5858,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/usr/src/app"
         },
         {
             "type": "node",
-            "request": "attach",
-            "name": "Attach to Port",
-            "address": "localhost",
-            "port": 5858
+            "request": "launch",
+            "name": "Debug a Gulp Task",
+            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "args": [
+                "populate-mongodb"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Sticker App",
+            "program": "${workspaceRoot}/server/index.js"
         }
     ]
 }
