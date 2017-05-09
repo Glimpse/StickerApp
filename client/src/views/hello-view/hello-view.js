@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 
-export default class HelloView extends React.Component {
+export default class HelloView extends Component {
     render() {
         return (
             <div>

@@ -21,7 +21,7 @@ class CartContainer extends React.Component {
             </div>
         );
     }
-};
+}
 
 CartContainer.getStores = () => [ cartStore ];
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import './common.css';
 
-const CheckoutView = React.createClass({
+export class CheckoutView extends React.Component {
     render() {
         return (
             <div className="gs-feedback">
@@ -21,6 +21,6 @@ const CheckoutView = React.createClass({
             </div>
         );
     }
-});
+}
 
-export default CheckoutView;
+//export default CheckoutView;

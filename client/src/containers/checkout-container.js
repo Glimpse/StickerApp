@@ -14,6 +14,6 @@ class CheckoutContainer extends React.Component {
             </div>
         );
     }
-};
+}
 
 export default CheckoutContainer;

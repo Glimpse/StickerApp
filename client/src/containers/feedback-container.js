@@ -14,6 +14,6 @@ class FeedbackContainer extends React.Component {
             </div>
         );
     }
-};
+}
 
 export default FeedbackContainer;

@@ -28,7 +28,7 @@ class CreateContainer extends React.Component {
             </div>
         );
     }
-};
+}
 
 CreateContainer.getStores = () => [ createStore, cartStore ];
 
