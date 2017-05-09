@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "compounds": [
         {
-            "name": "Hybrid: Client/Server",
+            "name": "Client-Server",
             "configurations": [
                 "Launch Chrome",
-                "Debug Sticker App"
+                "Launch Sticker App"
             ]
         }
     ],
@@ -23,7 +23,7 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Debug a Container",
+            "name": "Attach to Container",
             "address": "localhost",
             "port": 5858,
             "localRoot": "${workspaceRoot}",
@@ -41,7 +41,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug Sticker App",
+            "name": "Launch Sticker App",
             "program": "${workspaceRoot}/server/index.js"
         }
     ]
