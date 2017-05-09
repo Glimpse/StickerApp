@@ -5,7 +5,7 @@ import FeedbackView from '../views/checkout-view/feedback-view';
 
 import './base.css';
 
-const FeedbackContainer = React.createClass({
+class FeedbackContainer extends React.Component {
     render() {
         return (
             <div>
@@ -14,6 +14,6 @@ const FeedbackContainer = React.createClass({
             </div>
         );
     }
-});
+};
 
 export default FeedbackContainer;

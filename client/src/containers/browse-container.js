@@ -1,4 +1,3 @@
-// @ts-check
 
 import { Container } from 'flux/utils';
 import React from 'react';
@@ -16,30 +15,29 @@ import { createExpandItemAction, createCloseExpandedItemAction } from '../action
 import './base.css';
 
 class BrowseContainer extends React.Component {
-    
+
     render() {
         let expandedItem;
         if (this.state.browse.expandedItem) {
-            expandedItem = <ExpandedItemView item={this.state.browse.expandedItem} createCloseExpandedItemAction={createCloseExpandedItemAction}/>;
+            expandedItem = <ExpandedItemView item={this.state.browse.expandedItem} createCloseExpandedItemAction={createCloseExpandedItemAction} />;
         }
         return (
             <div>
 
-                <HeaderView pageName="browse" cartCount={this.state.cart.items.length}/>
+                <HeaderView pageName="browse" cartCount={this.state.cart.items.length} />
                 <TagListView tags={this.state.browse.tags} selectedTags={this.state.browse.selectedTags} />
                 <StickerListView items={this.state.browse.items} createExpandItemAction={createExpandItemAction} />
                 {expandedItem}
             </div>
         );
     }
-}
+};
 
-BrowseContainer.getStores = () => [ browseStore, cartStore ];
+BrowseContainer.getStores = () => [browseStore, cartStore];
 
 BrowseContainer.calculateState = () => ({
     browse: browseStore.getState(),
     cart: cartStore.getState()
-
 });
 
 export default Container.create(BrowseContainer);

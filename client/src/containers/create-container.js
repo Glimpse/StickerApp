@@ -13,7 +13,7 @@ import { createExpandItemAction, createCloseExpandedItemAction } from '../action
 
 import './base.css';
 
-const CreateContainer = React.createClass({
+class CreateContainer extends React.Component {
     render() {
         let expandedItem;
         if (this.state.create.expandedItem) {
@@ -28,7 +28,7 @@ const CreateContainer = React.createClass({
             </div>
         );
     }
-});
+};
 
 CreateContainer.getStores = () => [ createStore, cartStore ];
 

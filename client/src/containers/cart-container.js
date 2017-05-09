@@ -9,7 +9,7 @@ import cartStore from '../stores/cart-store';
 
 import './base.css';
 
-const CartContainer = React.createClass({
+class CartContainer extends React.Component {
     render() {
         const cartView = this.state.cart.items.length === 0 ?
             <EmptyCartView /> :
@@ -21,7 +21,7 @@ const CartContainer = React.createClass({
             </div>
         );
     }
-});
+};
 
 CartContainer.getStores = () => [ cartStore ];
 

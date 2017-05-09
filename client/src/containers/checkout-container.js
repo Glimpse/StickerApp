@@ -5,7 +5,7 @@ import CheckoutView from '../views/checkout-view/checkout-view';
 
 import './base.css';
 
-const CheckoutContainer = React.createClass({
+class CheckoutContainer extends React.Component {
     render() {
         return (
             <div>
@@ -14,6 +14,6 @@ const CheckoutContainer = React.createClass({
             </div>
         );
     }
-});
+};
 
 export default CheckoutContainer;
