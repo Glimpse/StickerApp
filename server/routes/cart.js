@@ -1,24 +1,25 @@
-'use strict';
-
-const express = require('express');
 const bodyParser = require('body-parser');
-const dataAccess = require('../db/data-access');
+const express = require('express');
 
 const router = express.Router();
-
 router.use(bodyParser.json());
 
 router.get('/', function stickerRouteCart(req, res) {
     res.render('index', { pageTitle: 'Cart', entry: 'cart' });
 });
 
+const db = require('../db');
 function sendItems(token, res) {
-    dataAccess.getCart(token, (items) => {
-        dataAccess.getStickers(null, (stickers) => {
-            res.send({
-                items: items.map((id) => stickers.filter((sticker) => sticker.id.toString() === id)[0])
-            });
+    db.getCart(token).then((cart) => {
+        if (!cart || !cart.items || cart.items.length === 0) {
+            return res.send({ items: [] });
+        }
+
+        db.getStickers().then((stickers) => {
+            res.send({ items: cart.items.map((id) => stickers.filter((sticker) => sticker.id.toString() === id)[0]) });
         });
+    }, () => {
+        res.send({ items: [] });
     });
 }
 
@@ -38,14 +39,16 @@ router.put('/api/items/:item_id', (req, res) => {
 
     console.log('Item targetted %s', req.params.item_id);
 
-    dataAccess.addToCart(req.body.token, req.params.item_id, () => {
-        dataAccess.getSticker(req.params.item_id, (item) => {
-            if (!item) {
-                dataAccess.addStickers([ req.body.item ], () => sendItems(req.body.token, res));
-            } else {
+    db.addToCart(req.body.token, req.params.item_id).then(() => {
+        return db.getSticker(req.params.item_id);
+    }).then((sticker) => {
+        if (!sticker) {
+            db.addStickers([ req.body.item ]).then(() => {
                 sendItems(req.body.token, res);
-            }
-        });
+            });
+        } else {
+            sendItems(req.body.token, res);
+        }
     });
 });
 
@@ -57,7 +60,7 @@ router.delete('/api/items/:item_id', (req, res) => {
 
     console.log('Item targetted', req.params.item_id);
 
-    dataAccess.removeFromCart(req.body.token, req.params.item_id, () => {
+    db.removeFromCart(req.body.token, req.params.item_id).then(() => {
         sendItems(req.body.token, res);
     });
 });

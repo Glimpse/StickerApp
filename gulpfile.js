@@ -8,13 +8,9 @@ var webpack = require('webpack');
 var eslint = require('gulp-eslint');
 var eslintConfig = require('./.eslintrc.json');
 
-gulp.task('populate-mongodb', function populateMongoDb(cb) {
-    process.argv.push('--config', path.join(__dirname, 'config.mongodb.json'));
-    var mongo = require('./server/db/sources/mongodb');
-    mongo.initializeDatabase(function onDatabaseInitialized() {
-        console.log('Database has been initialized');
-        cb();
-    });
+gulp.task('populate-mongodb', function populateMongoDb() {
+    const mongo = require('./server/db/sources/mongodb');
+    return mongo.initializeDatabase();
 });
 
 gulp.task('build', ['build-client-img', 'build-client-font', 'build-client-dev']);

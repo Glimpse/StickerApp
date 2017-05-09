@@ -1,7 +1,7 @@
 'use strict';
 
 const initialData = require('../initial-data');
-const carts  = {};
+const carts = {};
 
 function filterItems(tags, items) {
     let filteredItems = items;
@@ -19,21 +19,19 @@ function filterItems(tags, items) {
     return filteredItems;
 }
 
-function getStickers(tags, cb) {
+function getStickers(tags) {
     let items = initialData;
     if (tags) {
         items = filterItems(tags, items);
     }
-    setImmediate(() => cb(items));
+    return Promise.resolve(items);
 }
 
-function getSticker(id, cb) {
-    setImmediate(() => {
-        cb(initialData.filter((item) => item.id === id)[0]);
-    });
+function getSticker(id) {
+    return Promise.resolve(initialData.filter((item) => item.id === id)[0]);
 }
 
-function addStickers(items, cb) {
+function addStickers(items) {
     for (const item of items) {
         for (let i = 0; i < initialData.length; i++) {
             if (initialData[i].id === item.id) {
@@ -43,31 +41,30 @@ function addStickers(items, cb) {
         }
         initialData.push(item);
     }
-    setImmediate(cb);
+    return Promise.resolve();
 }
 
-function getCart(token, cb) {
+function getCart(token) {
     if (!carts[token]) {
         carts[token] = [];
     }
-    setImmediate(() => cb(carts[token]));
+    return Promise.resolve({ items: carts[token] });
 }
 
-function addToCart(token, itemId, cb) {
+function addToCart(token, itemId) {
     if (!carts[token]) {
         carts[token] = [];
     }
     for (const existingId of carts[token]) {
         if (itemId === existingId) {
-            setImmediate(cb);
-            return;
+            return Promise.resolve();
         }
     }
     carts[token].push(itemId);
-    setImmediate(cb);
+    return Promise.resolve();
 }
 
-function removeFromCart(token, itemId, cb) {
+function removeFromCart(token, itemId) {
     if (!carts[token]) {
         carts[token] = [];
     }
@@ -77,24 +74,28 @@ function removeFromCart(token, itemId, cb) {
             break;
         }
     }
-    setImmediate(cb);
+    return Promise.resolve();
 }
 
-function clearCart(token, cb) {
+function clearCart(token) {
     carts[token] = [];
-    setImmediate(cb);
+    return Promise.resolve();
+}
+ 
+/* eslint-disable no-unused-vars */
+
+function addOrder(order) {
+    return Promise.resolve();
 }
 
-function addOrder(order, cb) {
-    setImmediate(cb);
+function addFeedback(feedback) {
+    return Promise.resolve();
 }
 
-function addFeedback(feedback, cb) {
-    setImmediate(cb);
-}
+/* eslint-enableno-unused-vars */
 
-function initializeDatabase(cb) {
-    setImmediate(cb);
+function initializeDatabase() {
+    return Promise.resolve();
 }
 
 module.exports = {

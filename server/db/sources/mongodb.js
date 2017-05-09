@@ -1,243 +1,151 @@
-'use strict';
+const { MongoClient } = require('mongodb');
+const config = require('../../config').mongodb;
 
+let connection;
+function connect() {
+    if (!connection) {
+        return MongoClient.connect(config.url).then((db) => {
+            connection = db;
+            return connection;
+        });
+    }
 
-const mongoClient = require('mongodb').MongoClient;
-const mongoConfig = require('../../config').mongodb;
-const initialData = require('../initial-data');
-const mongodbUri = require('mongodb-uri');
-
-// parse the mongodb url to add the database if necessary
-var url = process.env.MONGODB_URL || `mongodb://${mongoConfig.host}:${mongoConfig.port}`;
-let urlObject = mongodbUri.parse(url);
-urlObject.database = mongoConfig.dbName;
-url = mongodbUri.format(urlObject);
-
-// This supports adding either a single doc or an array of docs
-function dbInsertDocs(db, collectionName, doc, cb) {
-    const collection = db.collection(collectionName);
-    collection.insert(
-        doc,
-        (err, result) => {
-            if (err) { throw err; }
-            cb(result);
-        }
-    );
+    return Promise.resolve(connection);
 }
 
-function dbReadDocs(db, collectionName, criteria, cb) {
-    const collection = db.collection(collectionName);
-    collection.find(criteria).toArray(
-        (err, result) => {
-            if (err) { throw err; }
-            cb(result);
-        }
-    );
+function disconnect() {
+    if (connection) {
+        return connection.close().then(() => {
+            connection = null;
+        });
+    }
+
+    return Promise.resolve();
 }
 
-function dbReadOneDoc(db, collectionName, criteria, cb) {
-    const collection = db.collection(collectionName);
-    collection.findOne(
-        criteria,
-        (err, result) => {
-            if (err) { throw err; }
-            cb(result);
-        }
-    );
+function findDoc(db, collectionName, criteria) {
+    return db.collection(collectionName).findOne(criteria);
 }
 
-function dbUpdateDocs(db, collectionName, criteria, doc, cb) {
-    const collection = db.collection(collectionName);
-    const options = { w: 1, multi: true, upsert: false };
-    collection.update(
-        criteria,
-        doc,
-        options,
-        (err, updateCount) => {
-            if (err) { throw err; }
-            cb(updateCount);
-        }
-    );
+function findDocs(db, collectionName, criteria) {
+    return db.collection(collectionName).find(criteria).toArray();
 }
 
-function dbRemoveOneDoc(db, collectionName, criteria, cb) {
-    const collection = db.collection(collectionName);
-    const options = { w: 1, single: true };
-    collection.remove(
-        criteria,
-        options,
-        (err, deleteCount) => {
-            if (err) { throw err; }
-            cb(deleteCount);
-        }
-    );
+function insertDocs(db, collectionName, docs) {
+    return db.collection(collectionName).insert(docs);
 }
 
-function dbDropCollection(db, collectionName) {
-    const collection = db.collection(collectionName);
-    collection.drop();
+function removeDoc(db, collectionName, criteria) {
+    return db.collection(collectionName).remove(criteria, {
+        single: true,
+        w: 1
+    });
 }
 
-// Public APIs
-function getStickers(tags, cb) {
+function updateDocs(db, collectionName, criteria, doc) {
+    return db.collection(collectionName).update(criteria, doc, {
+        multi: true,
+        upsert: false,
+        w: 1
+    });
+}
+
+exports.addFeedback = (doc) => {
+    console.log('mongodb.js: addFeedback');
+    return connect().then((db) => {
+        return insertDocs(db, config.feedbackCollectionName, doc);
+    });
+};
+
+exports.addOrder = (doc) => {
+    console.log('mongodb.js: addOrder');
+    return connect().then((db) => {
+        return insertDocs(db, config.orderCollectionName, doc);
+    });
+};
+
+exports.addStickers = (items) => {
+    console.log('mongodb.js: addStickers');
+    return connect().then((db) => {
+        return insertDocs(db, config.stickerCollectionName, items);
+    });
+};
+
+exports.addToCart = (token, itemId) => {
+    console.log('mongodb.js: addToCart');
+    return connect().then((db) => {
+        return findDoc(db, config.cartCollectionName, { _id: token }).then((cart) => {
+            if (!cart) {
+                return insertDocs(db, config.cartCollectionName, {
+                    _id: token,
+                    items: [ itemId ]
+                });
+            } else {
+                return updateDocs(db, config.cartCollectionName, { _id: token }, {
+                    $addToSet: { items: itemId }
+                });
+            }
+        });
+    });
+};
+
+exports.clearCart = (token) => {
+    console.log('mongodb.js: clearCart');
+    return connect().then((db) => {
+        return removeDoc(db, config.cartCollectionName, {
+            _id: token
+        });
+    });
+};
+
+exports.getCart = (token) => {
+    console.log('mongodb.js: getCart');
+    return connect().then((db) => {
+        return findDoc(db, config.cartCollectionName, { _id: token });
+    });
+};
+
+exports.getSticker = (id) => {
+    console.log('mongodb.js: getSticker');
+    return connect().then((db) => {
+        return findDoc(db, config.stickerCollectionName, { id });
+    });
+};
+
+exports.getStickers = (tags) => {
     console.log('mongodb.js: getStickers');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
+    return connect().then((db) => {
         const query = {};
         if (tags) {
             query.tags = {
                 $elemMatch: { $in: tags }
             };
         }
-        dbReadDocs(db, mongoConfig.stickerCollectionName, query, (result) => {
-            db.close();
-            cb(result);
-        });
+        
+        return findDocs(db, config.stickerCollectionName, query);
     });
-}
+};
 
-function getSticker(id, cb) {
-    console.log('mongodb.js: getSticker');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbReadOneDoc(db, mongoConfig.stickerCollectionName, { id }, (result) => {
-            db.close();
-            cb(result);
-        });
-    });
-}
+exports.initializeDatabase = () => {
+    const initialData = require('../initial-data');
+    
+    return connect()
+        .then((db) => db.dropDatabase())
+        .then(() => exports.addStickers(initialData))
+        .then(disconnect);
+};
 
-function addStickers(items, cb) {
-    console.log('mongodb.js: addStickers');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbInsertDocs(db, mongoConfig.stickerCollectionName, items, (result) => {
-            db.close();
-            cb(result);
-        });
-    });
-}
-
-function getCart(token, cb) {
-    console.log('mongodb.js: getCart');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbReadOneDoc(db, mongoConfig.cartCollectionName, {
-            _id: token
-        }, (result) => {
-            db.close();
-            cb(result && result.items || []);
-        });
-    });
-}
-
-function addToCart(token, itemId, cb) {
-    console.log('mongodb.js: addToCart');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbReadOneDoc(db, mongoConfig.cartCollectionName, { _id: token }, (cart) => {
-            if (!cart) {
-                dbInsertDocs(db, mongoConfig.cartCollectionName, {
-                    _id: token,
-                    items: [ itemId ]
-                }, () => {
-                    db.close();
-                    cb();
-                });
-            } else {
-                dbUpdateDocs(db, mongoConfig.cartCollectionName, {
-                    _id: token
-                }, {
-                    $addToSet: { items: itemId }
-                }, () => {
-                    db.close();
-                    cb();
-                });
-            }
-        });
-    });
-}
-
-function removeFromCart(token, itemId, cb) {
+exports.removeFromCart = (token, itemId) => {
     console.log('mongodb.js: removeFromCart');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbReadOneDoc(db, mongoConfig.cartCollectionName, { _id: token }, (cart) => {
+    return connect().then((db) => {
+        return findDoc(db, config.cartCollectionName, { _id: token }).then((cart) => {
             if (!cart) {
-                db.close();
-                cb();
                 return;
             }
-            dbUpdateDocs(db, mongoConfig.cartCollectionName, {
-                _id: token
-            }, {
+
+            return updateDocs(db, config.cartCollectionName, { _id: token }, {
                 $pull: { items: itemId }
-            }, () => {
-                db.close();
-                cb();
             });
         });
     });
-}
-
-function clearCart(token, cb) {
-    console.log('mongodb.js: clearCart');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbRemoveOneDoc(db, mongoConfig.cartCollectionName, {
-            _id: token
-        }, () => {
-            db.close();
-            cb();
-        });
-    });
-}
-
-function addOrder(doc, cb) {
-    console.log('mongodb.js: addOrder');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbInsertDocs(db, mongoConfig.orderCollectionName, doc, (result) => {
-            db.close();
-            cb(result);
-        });
-    });
-}
-
-function addFeedback(doc, cb) {
-    console.log('mongodb.js: addFeedback');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbInsertDocs(db, mongoConfig.feedbackCollectionName, doc, (result) => {
-            db.close();
-            cb(result);
-        });
-    });
-}
-
-function initializeDatabase(cb) {
-    console.log('mongodb.js: initializeDatabase');
-    mongoClient.connect(url, (err, db) => {
-        if (err) { throw err; }
-        dbDropCollection(db, mongoConfig.stickerCollectionName);
-        dbDropCollection(db, mongoConfig.orderCollectionName);
-        dbDropCollection(db, mongoConfig.feedbackCollectionName);
-        dbDropCollection(db, mongoConfig.cartCollectionName);
-        addStickers(initialData, () => {
-            db.close();
-            cb();
-        });
-    });
-}
-
-module.exports = {
-    getStickers,
-    getSticker,
-    addStickers,
-    getCart,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    addOrder,
-    addFeedback,
-    initializeDatabase
 };

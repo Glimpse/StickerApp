@@ -19,10 +19,6 @@ export default React.createClass({
                 <div className="gs-header-decorator">
                     <a href="/"><img src="/img/Logo.png" /></a>
                 </div>
-                <div className="gs-header-info">
-                    <img src="/img/Hero.png" />
-                    <div className="gs-header-info-tagline">powered by <a href="http://getglimpse.com"><b>Glimpse</b></a></div>
-                </div>
                 <div className="gs-header-navbar">
                     <div className="gs-header-navbar-spacer"></div>
                     <div className="gs-header-navbar-link-container">
