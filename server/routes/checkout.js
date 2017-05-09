@@ -18,11 +18,11 @@ router.post('/', function stickerRouteCheckout(req, res) {
         name: req.body['checkout-name'],
         email: req.body['checkout-email'],
         token: req.body.token
-    }, () => {
+    }).then(() => {
         console.log('Order added');
-        dataAccess.clearCart(req.body.token, () => {
-            res.render('index', { pageTitle: 'Checkout', entry: 'checkout' });
-        });
+        return dataAccess.clearCart(req.body.token);
+    }).then(() => {
+        res.render('index', { pageTitle: 'Checkout', entry: 'checkout' });
     });
 });
 

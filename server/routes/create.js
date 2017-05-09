@@ -9,40 +9,12 @@ const nobodyAuthorRegex = /nobody@flickr.com \((.*)\)/;
 
 router.get('/', function stickerRouteCreate(req, res) {
     const renderData = { pageTitle: 'Create', entry: 'create' };
-
     console.log('Render values: ', renderData);
-
     res.render('index', renderData);
 });
 
-// these logs are added to test and demonstrate server side proxy for console logging
-function testServerLogging() {
-    /*
-    // console.log
-    console.log('[Node.js] 1. Server-side console logging tests...');
-    console.log('[Node.js] 2. console.log test: ' + 'searching image');
-    console.log('[Node.js] 3. console.log format test: %s has %d star!', 'glimpse', 5);
-    console.log('[Node.js] 4. console.log format test: %s has %d star %d', 'glimpse', 5);
-
-    // console.info
-    console.info('[Node.js] 5. console.info test: %s', 'this is informational');
-
-    // console.warn
-    console.warn('[Node.js] %d. console.warn test: %s', 6, 'this is a warning!');
-
-    // console.error
-    console.error('[Node.js] 7. console.error test: this is an error!');
-
-    //console.assert
-    console.assert(true, '[Node.js] 8. console.assert test: assert succeeded');
-    */
-}
-
-// Note: we handle image search on the server side to demonstrate the application of microservices
 router.get('/api/search', (req, res) => {
     const keyword = req.query.keyword;
-
-    testServerLogging();
 
     if (!keyword) {
         console.warn('No keyword was specified; searching with \'undefined\'');
@@ -50,8 +22,7 @@ router.get('/api/search', (req, res) => {
 
     console.log('Handling /api/search. Keyword: ' + keyword);
 
-    const url = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='
-        + keyword + '&format=json&jsoncallback=?';
+    const url = `http://api.flickr.com/services/feeds/photos_public.gne?tags=${keyword}&format=json&jsoncallback=?`;
 
     request({
         url,
