@@ -32,7 +32,7 @@ class BrowseContainer extends React.Component {
             </div>
         );
     }
-};
+}
 
 BrowseContainer.getStores = () => [ browseStore, cartStore ];
 
