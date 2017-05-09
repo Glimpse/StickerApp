@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production
+      MONGODB_URL: mongodb://mongo:27017
     ports:
       - 3000:3000
     links:
@@ -16,4 +17,4 @@ services:
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - 27018:27017

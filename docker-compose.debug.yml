@@ -9,15 +9,16 @@ services:
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
+      MONGODB_URL: mongodb://mongo:27017
     ports:
       - 3000:3000
       - 5858:5858
-    volumes:
-      - .:/usr/src/app
     command: node --debug=5858 server/index.js
+    ports:
+      - 3000:3000
     links:
       - mongo
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - 27018:27017
