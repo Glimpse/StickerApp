@@ -3,7 +3,7 @@ import React from 'react';
 import './common.css';
 import './feedback-view.css';
 
-const FeedbackView = React.createClass({
+class FeedbackView extends React.Component {
     render() {
         return (
             <div className="gs-feedback">
@@ -19,6 +19,6 @@ const FeedbackView = React.createClass({
             </div>
         );
     }
-});
+}
 
 export default FeedbackView;
