@@ -1,24 +1,21 @@
-'use strict';
-
-const express = require('express');
 const bodyParser = require('body-parser');
-const dataAccess = require('../db/data-access');
+const express = require('express');
 
 const router = express.Router();
-
 router.use(bodyParser.json());
 
 router.get('/', function stickerRouteCart(req, res) {
     res.render('index', { pageTitle: 'Cart', entry: 'cart' });
 });
 
+const db = require('../db');
 function sendItems(token, res) {
-    dataAccess.getCart(token).then((cart) => {
+    db.getCart(token).then((cart) => {
         if (!cart || !cart.items || cart.items.length === 0) {
             return res.send({ items: [] });
         }
 
-        dataAccess.getStickers().then((stickers) => {
+        db.getStickers().then((stickers) => {
             res.send({ items: cart.items.map((id) => stickers.filter((sticker) => sticker.id.toString() === id)[0]) });
         });
     }, () => {
@@ -42,11 +39,11 @@ router.put('/api/items/:item_id', (req, res) => {
 
     console.log('Item targetted %s', req.params.item_id);
 
-    dataAccess.addToCart(req.body.token, req.params.item_id).then(() => {
-        return dataAccess.getSticker(req.params.item_id);
+    db.addToCart(req.body.token, req.params.item_id).then(() => {
+        return db.getSticker(req.params.item_id);
     }).then((sticker) => {
         if (!sticker) {
-            dataAccess.addStickers([ req.body.item ]).then(() => {
+            db.addStickers([ req.body.item ]).then(() => {
                 sendItems(req.body.token, res);
             });
         } else {
@@ -63,7 +60,7 @@ router.delete('/api/items/:item_id', (req, res) => {
 
     console.log('Item targetted', req.params.item_id);
 
-    dataAccess.removeFromCart(req.body.token, req.params.item_id).then(() => {
+    db.removeFromCart(req.body.token, req.params.item_id).then(() => {
         sendItems(req.body.token, res);
     });
 });

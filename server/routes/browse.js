@@ -1,10 +1,7 @@
-'use strict';
-
-const express = require('express');
 const bodyParser = require('body-parser');
-const router = new express.Router();
+const express = require('express');
 
-const dataAccess = require('../db/data-access');
+const router = new express.Router();
 router.use(bodyParser.json());
 
 router.get('/', function stickerRouteBrowse(req, res) {
@@ -13,13 +10,14 @@ router.get('/', function stickerRouteBrowse(req, res) {
     res.render('index', renderData);
 });
 
+const db = require('../db');
 router.get('/api/items', function stickerRouteApiBrowse(req, res) {
     let tags;
     if (req.query.tags) {
         tags = req.query.tags.split(',');
     }
 
-    dataAccess.getStickers(tags).then((items) => {
+    db.getStickers(tags).then((items) => {
         console.info('%d stickers found', items.length);
         if (tags) {
             console.log('Tags used in filter: ', tags);
