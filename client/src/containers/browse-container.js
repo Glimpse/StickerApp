@@ -1,5 +1,7 @@
-import React from 'react';
+// @ts-check
+
 import { Container } from 'flux/utils';
+import React from 'react';
 
 import HeaderView from '../views/header-view/header-view';
 import TagListView from '../views/tag-list-view/tag-list-view';
@@ -13,7 +15,8 @@ import { createExpandItemAction, createCloseExpandedItemAction } from '../action
 
 import './base.css';
 
-const BrowseContainer = React.createClass({
+class BrowseContainer extends React.Component {
+    
     render() {
         let expandedItem;
         if (this.state.browse.expandedItem) {
@@ -21,6 +24,7 @@ const BrowseContainer = React.createClass({
         }
         return (
             <div>
+
                 <HeaderView pageName="browse" cartCount={this.state.cart.items.length}/>
                 <TagListView tags={this.state.browse.tags} selectedTags={this.state.browse.selectedTags} />
                 <StickerListView items={this.state.browse.items} createExpandItemAction={createExpandItemAction} />
@@ -28,13 +32,14 @@ const BrowseContainer = React.createClass({
             </div>
         );
     }
-});
+};
 
 BrowseContainer.getStores = () => [ browseStore, cartStore ];
 
 BrowseContainer.calculateState = () => ({
     browse: browseStore.getState(),
     cart: cartStore.getState()
+
 });
 
 export default Container.create(BrowseContainer);
