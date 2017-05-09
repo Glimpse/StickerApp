@@ -1,13 +1,10 @@
-'use strict';
-
 const { MongoClient } = require('mongodb');
-const mongoConfig = require('../../config').mongodb;
-const initialData = require('../initial-data');
+const config = require('../../config').mongodb;
 
 let connection;
 function connect() {
     if (!connection) {
-        return MongoClient.connect(mongoConfig.url).then((db) => {
+        return MongoClient.connect(config.url).then((db) => {
             connection = db;
             return connection;
         });
@@ -21,41 +18,101 @@ function disconnect() {
         return connection.close().then(() => {
             connection = null;
         });
-    } 
+    }
 
     return Promise.resolve();
 }
 
-// This supports adding either a single doc or an array of docs
-function dbInsertDocs(db, collectionName, doc) {
-    const collection = db.collection(collectionName);
-    return collection.insert(doc);
+function findDoc(db, collectionName, criteria) {
+    return db.collection(collectionName).findOne(criteria);
 }
 
-function dbReadDocs(db, collectionName, criteria) {
-    const collection = db.collection(collectionName);
-    return collection.find(criteria).toArray();
+function findDocs(db, collectionName, criteria) {
+    return db.collection(collectionName).find(criteria).toArray();
 }
 
-function dbReadOneDoc(db, collectionName, criteria) {
-    const collection = db.collection(collectionName);
-    return collection.findOne(criteria);
+function insertDocs(db, collectionName, docs) {
+    return db.collection(collectionName).insert(docs);
 }
 
-function dbUpdateDocs(db, collectionName, criteria, doc) {
-    const collection = db.collection(collectionName);
-    const options = { w: 1, multi: true, upsert: false };
-    return collection.update(criteria, doc, options);
+function removeDoc(db, collectionName, criteria) {
+    return db.collection(collectionName).remove(criteria, {
+        single: true,
+        w: 1
+    });
 }
 
-function dbRemoveOneDoc(db, collectionName, criteria) {
-    const collection = db.collection(collectionName);
-    const options = { w: 1, single: true };
-    return collection.remove(criteria, options);
+function updateDocs(db, collectionName, criteria, doc) {
+    return db.collection(collectionName).update(criteria, doc, {
+        multi: true,
+        upsert: false,
+        w: 1
+    });
 }
 
-// Public APIs
-function getStickers(tags) {
+exports.addFeedback = (doc) => {
+    console.log('mongodb.js: addFeedback');
+    return connect().then((db) => {
+        return insertDocs(db, config.feedbackCollectionName, doc);
+    });
+};
+
+exports.addOrder = (doc) => {
+    console.log('mongodb.js: addOrder');
+    return connect().then((db) => {
+        return insertDocs(db, config.orderCollectionName, doc);
+    });
+};
+
+exports.addStickers = (items) => {
+    console.log('mongodb.js: addStickers');
+    return connect().then((db) => {
+        return insertDocs(db, config.stickerCollectionName, items);
+    });
+};
+
+exports.addToCart = (token, itemId) => {
+    console.log('mongodb.js: addToCart');
+    return connect().then((db) => {
+        return findDoc(db, config.cartCollectionName, { _id: token }).then((cart) => {
+            if (!cart) {
+                return insertDocs(db, config.cartCollectionName, {
+                    _id: token,
+                    items: [ itemId ]
+                });
+            } else {
+                return updateDocs(db, config.cartCollectionName, { _id: token }, {
+                    $addToSet: { items: itemId }
+                });
+            }
+        });
+    });
+};
+
+exports.clearCart = (token) => {
+    console.log('mongodb.js: clearCart');
+    return connect().then((db) => {
+        return removeDoc(db, config.cartCollectionName, {
+            _id: token
+        });
+    });
+};
+
+exports.getCart = (token) => {
+    console.log('mongodb.js: getCart');
+    return connect().then((db) => {
+        return findDoc(db, config.cartCollectionName, { _id: token });
+    });
+};
+
+exports.getSticker = (id) => {
+    console.log('mongodb.js: getSticker');
+    return connect().then((db) => {
+        return findDoc(db, config.stickerCollectionName, { id });
+    });
+};
+
+exports.getStickers = (tags) => {
     console.log('mongodb.js: getStickers');
     return connect().then((db) => {
         const query = {};
@@ -63,105 +120,32 @@ function getStickers(tags) {
             query.tags = {
                 $elemMatch: { $in: tags }
             };
-        };
+        }
         
-        return dbReadDocs(db, mongoConfig.stickerCollectionName, query);
+        return findDocs(db, config.stickerCollectionName, query);
     });
-}
+};
 
-function getSticker(id) {
-    console.log('mongodb.js: getSticker');
-    return connect().then((db) => {
-        return dbReadOneDoc(db, mongoConfig.stickerCollectionName, { id });
-    });
-}
+exports.initializeDatabase = () => {
+    const initialData = require('../initial-data');
+    
+    return connect()
+        .then((db) => db.dropDatabase())
+        .then(() => exports.addStickers(initialData))
+        .then(disconnect);
+};
 
-function addStickers(items) {
-    console.log('mongodb.js: addStickers');
-    return connect().then((db) => {
-        return dbInsertDocs(db, mongoConfig.stickerCollectionName, items);
-    });
-}
-
-function getCart(token) {
-    console.log('mongodb.js: getCart');
-    return connect().then((db) => {
-        return dbReadOneDoc(db, mongoConfig.cartCollectionName, { _id: token });
-    });
-}
-
-function addToCart(token, itemId) {
-    console.log('mongodb.js: addToCart');
-    return connect().then((db) => {
-        return dbReadOneDoc(db, mongoConfig.cartCollectionName, { _id: token }).then((cart) => {
-            if (!cart) {
-                return dbInsertDocs(db, mongoConfig.cartCollectionName, {
-                    _id: token,
-                    items: [ itemId ]
-                });
-            } else {
-                return dbUpdateDocs(db, mongoConfig.cartCollectionName, { _id: token }, {
-                    $addToSet: { items: itemId }
-                });
-            }
-        });
-    });
-}
-
-function removeFromCart(token, itemId) {
+exports.removeFromCart = (token, itemId) => {
     console.log('mongodb.js: removeFromCart');
     return connect().then((db) => {
-        return dbReadOneDoc(db, mongoConfig.cartCollectionName, { _id: token }).then((cart) => {
+        return findDoc(db, config.cartCollectionName, { _id: token }).then((cart) => {
             if (!cart) {
                 return;
             }
 
-            return dbUpdateDocs(db, mongoConfig.cartCollectionName, { _id: token }, {
+            return updateDocs(db, config.cartCollectionName, { _id: token }, {
                 $pull: { items: itemId }
             });
         });
     });
-}
-
-function clearCart(token) {
-    console.log('mongodb.js: clearCart');
-    return connect().then((db) => {
-        return dbRemoveOneDoc(db, mongoConfig.cartCollectionName, {
-            _id: token
-        });
-    });
-}
-
-function addOrder(doc) {
-    console.log('mongodb.js: addOrder');
-    return connect().then((db) => {
-        return dbInsertDocs(db, mongoConfig.orderCollectionName, doc);
-    });
-}
-
-function addFeedback(doc) {
-    console.log('mongodb.js: addFeedback');
-    return connect().then((db) => {
-        return dbInsertDocs(db, mongoConfig.feedbackCollectionName, doc);
-    });
-}
-
-function initializeDatabase() {
-    return connect()
-        .then((db) => db.dropDatabase())
-        .then(() => addStickers(initialData))
-        .then(disconnect);
-}
-
-module.exports = {
-    getStickers,
-    getSticker,
-    addStickers,
-    getCart,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    addOrder,
-    addFeedback,
-    initializeDatabase
 };

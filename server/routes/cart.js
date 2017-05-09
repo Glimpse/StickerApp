@@ -22,7 +22,7 @@ function sendItems(token, res) {
             res.send({ items: cart.items.map((id) => stickers.filter((sticker) => sticker.id.toString() === id)[0]) });
         });
     }, () => {
-        res.send({ items: [] })
+        res.send({ items: [] });
     });
 }
 
@@ -47,7 +47,7 @@ router.put('/api/items/:item_id', (req, res) => {
     }).then((sticker) => {
         if (!sticker) {
             dataAccess.addStickers([ req.body.item ]).then(() => {
-                sendItems(req.body.token, res)
+                sendItems(req.body.token, res);
             });
         } else {
             sendItems(req.body.token, res);

@@ -81,6 +81,8 @@ function clearCart(token) {
     carts[token] = [];
     return Promise.resolve();
 }
+ 
+/* eslint-disable no-unused-vars */
 
 function addOrder(order) {
     return Promise.resolve();
@@ -89,6 +91,8 @@ function addOrder(order) {
 function addFeedback(feedback) {
     return Promise.resolve();
 }
+
+/* eslint-enableno-unused-vars */
 
 function initializeDatabase() {
     return Promise.resolve();
