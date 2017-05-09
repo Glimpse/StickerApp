@@ -4,8 +4,26 @@ const { MongoClient } = require('mongodb');
 const mongoConfig = require('../../config').mongodb;
 const initialData = require('../initial-data');
 
+let connection;
 function connect() {
-    return MongoClient.connect(mongoConfig.url);
+    if (!connection) {
+        return MongoClient.connect(mongoConfig.url).then((db) => {
+            connection = db;
+            return connection;
+        });
+    }
+
+    return Promise.resolve(connection);
+}
+
+function disconnect() {
+    if (connection) {
+        return connection.close().then(() => {
+            connection = null;
+        });
+    } 
+
+    return Promise.resolve();
 }
 
 // This supports adding either a single doc or an array of docs
@@ -34,11 +52,6 @@ function dbRemoveOneDoc(db, collectionName, criteria) {
     const collection = db.collection(collectionName);
     const options = { w: 1, single: true };
     return collection.remove(criteria, options);
-}
-
-function dbDropCollection(db, collectionName) {
-    const collection = db.collection(collectionName);
-    return collection.drop();
 }
 
 // Public APIs
@@ -134,20 +147,10 @@ function addFeedback(doc) {
 }
 
 function initializeDatabase() {
-    return connect().then((db) => {
-        return Promise.all([
-            dbDropCollection(db, mongoConfig.stickerCollectionName),
-            dbDropCollection(db, mongoConfig.orderCollectionName),
-            dbDropCollection(db, mongoConfig.feedbackCollectionName),
-            dbDropCollection(db, mongoConfig.cartCollectionName)
-        ]).then(() => {
-            return addStickers(initialData).then(() => {
-                return db.close();
-            });
-        }, () => {
-            db.close();
-        });
-    });
+    return connect()
+        .then((db) => db.dropDatabase())
+        .then(() => addStickers(initialData))
+        .then(disconnect);
 }
 
 module.exports = {
