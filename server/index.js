@@ -23,13 +23,6 @@ app.set('view engine', 'pug');
 
 app.use(express.static(path.join(PROJECT_ROOT, 'client', 'dist')));
 
-app.use(function glimpseMiddleware(req, res, next) {
-    res.setHeader('X-Powered-By', 'Glimpse');
-
-    next();
-});
-
-// Edge caches XHR calls, which means that once it fetches an empty cart, it caches the empty cart response. Seriously, WTF?
 app.use(function stickerCacheSetup(req, res, next) {
     res.setHeader('Cache-Control', 'no-cache');
     next();
