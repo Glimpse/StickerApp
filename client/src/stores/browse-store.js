@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ReduceStore } from 'flux/utils';
 import dispatcher from '../dispatcher';
 import { BROWSE_ACTIONS } from '../actions/actions';
