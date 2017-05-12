@@ -10,6 +10,13 @@
                 "Launch Chrome",
                 "Launch Sticker App"
             ]
+        },
+         {
+            "name": "Client-Server Gateway",
+            "configurations": [
+                "Launch Chrome",
+                "Launch Sticker App Gateway"
+            ]
         }
     ],
     "configurations": [
@@ -43,6 +50,12 @@
             "request": "launch",
             "name": "Launch Sticker App",
             "program": "${workspaceRoot}/server/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Sticker App Gateway",
+            "program": "${workspaceRoot}/apigateway/app.js"
         }
     ]
 }

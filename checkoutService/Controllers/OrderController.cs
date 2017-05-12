@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using CheckoutService.Models;
+using Microsoft.Extensions.Primitives;
 
 namespace CheckoutService.Controllers
 {
@@ -41,11 +42,12 @@ namespace CheckoutService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Order order)
         {
-            if (order == null)
+            StringValues userId = String.Empty;
+            if (order == null || !this.Request.Headers.TryGetValue("stickerUserId", out userId))
             {
-                return BadRequest();
+                return BadRequest($"Invalid order values. Order:{order} UserId:{userId}");
             }
-
+            
             //When an Order is created, the service assumes that any Items that should be added to the order will be sent
             //in the same POST request.  If no items are specified, an empty list of Items will be created by default.
             if (order.Items == null)
@@ -53,6 +55,7 @@ namespace CheckoutService.Controllers
                 order.Items = new List<OrderItem>();
             }
 
+            order.UserId = userId;
             await _database.GetOrderCollection().InsertOneAsync(order);
             return Created(order.Id, order);
         }

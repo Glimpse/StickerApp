@@ -71,7 +71,8 @@ export default React.createClass({
     displayName: 'normal-cart-view',
 
     propTypes: {
-        items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
+        items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+        userProfile: React.PropTypes.object
     },
 
     render() {
@@ -101,9 +102,13 @@ export default React.createClass({
 
                     <div className="gs-cartview-normal-rightpane">
                         <div className="gs-cartview-normal-rightpane-label">Name</div>
-                        <input placeholder="required" className="gs-cartview-normal-rightpane-input" name="checkout-name" min="1" />
+                        <input placeholder="required"
+                            value={this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.fullName : ''}
+                            className="gs-cartview-normal-rightpane-input" name="checkout-name" min="1" />
                         <div className="gs-cartview-normal-rightpane-label">Email Address</div>
-                        <input placeholder="required" className="gs-cartview-normal-rightpane-input" name="checkout-email" type="email" min="1" />
+                        <input placeholder="required"
+                            value={this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.email : ''}
+                            className="gs-cartview-normal-rightpane-input" name="checkout-email" type="email" min="1" />
                         <div className="gs-cartview-normal-rightpane-disclaimer">
                             *You will be able to pick up your stickers right after the demo. No physical address required
                         </div>

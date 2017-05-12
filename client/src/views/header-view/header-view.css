@@ -3,6 +3,7 @@
     padding: 4px 15px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .gs-header-decorator a {
@@ -16,6 +17,16 @@
     justify-content: center;
     align-items: center;
     background-color: #fff;
+}
+
+.gs-header-authinfo {
+    font-family: "Selawik Light";
+    color: white;
+}
+
+.gs-header-authinfo > a,
+.gs-header-authinfo > a:hover {
+    color: white;
 }
 
 .gs-header-info-tagline {

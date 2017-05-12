@@ -8,6 +8,7 @@ import ExpandedItemView from '../views/expanded-item-view/expanded-item-view';
 
 import browseStore from '../stores/browse-store';
 import cartStore from '../stores/cart-store';
+import authStore from '../stores/auth-store';
 
 import { createExpandItemAction, createCloseExpandedItemAction } from '../actions/browse-actions';
 
@@ -21,7 +22,7 @@ const BrowseContainer = React.createClass({
         }
         return (
             <div>
-                <HeaderView pageName="browse" cartCount={this.state.cart.items.length}/>
+                 <HeaderView pageName="browse" cartCount={this.state.cart.items.length} userProfile={this.state.auth.userProfile} />
                 <TagListView tags={this.state.browse.tags} selectedTags={this.state.browse.selectedTags} />
                 <StickerListView items={this.state.browse.items} createExpandItemAction={createExpandItemAction} />
                 {expandedItem}
@@ -30,11 +31,12 @@ const BrowseContainer = React.createClass({
     }
 });
 
-BrowseContainer.getStores = () => [ browseStore, cartStore ];
+BrowseContainer.getStores = () => [ browseStore, cartStore, authStore ];
 
 BrowseContainer.calculateState = () => ({
     browse: browseStore.getState(),
-    cart: cartStore.getState()
+    cart: cartStore.getState(),
+    auth: authStore.getState()
 });
 
 export default Container.create(BrowseContainer);

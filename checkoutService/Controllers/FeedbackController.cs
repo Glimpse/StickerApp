@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using CheckoutService.Models;
+using Microsoft.Extensions.Primitives;
 
 namespace CheckoutService.Controllers
 {
@@ -41,11 +42,13 @@ namespace CheckoutService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Feedback feedback)
         {
-            if (feedback == null)
+            StringValues userId = String.Empty;
+            if (feedback == null || !this.Request.Headers.TryGetValue("stickerUserId", out userId))
             {
-                return BadRequest();
+                return BadRequest($"Invalid feedback values. Feedback:{feedback} UserId:{userId}");
             }
-
+            
+            feedback.UserId = userId;
             await _database.GetFeedbackCollection().InsertOneAsync(feedback);
             return Created(feedback.Id, feedback);
         }

@@ -8,6 +8,7 @@ import ExpandedItemView from '../views/expanded-item-view/expanded-item-view';
 
 import createStore from '../stores/create-store';
 import cartStore from '../stores/cart-store';
+import authStore from '../stores/auth-store';
 
 import { createExpandItemAction, createCloseExpandedItemAction } from '../actions/create-actions';
 
@@ -21,7 +22,7 @@ const CreateContainer = React.createClass({
         }
         return (
             <div>
-                <HeaderView pageName="create" cartCount={this.state.cart.items.length}/>
+                 <HeaderView pageName="create" cartCount={this.state.cart.items.length} userProfile={this.state.auth.userProfile} />
                 <SearchBoxView placeholder={this.state.create.defaultKeyword} />
                 <StickerListView items={this.state.create.items} createExpandItemAction={createExpandItemAction} />
                 {expandedItem}
@@ -30,11 +31,12 @@ const CreateContainer = React.createClass({
     }
 });
 
-CreateContainer.getStores = () => [ createStore, cartStore ];
+CreateContainer.getStores = () => [ createStore, cartStore, authStore ];
 
 CreateContainer.calculateState = () => ({
     create: createStore.getState(),
-    cart: cartStore.getState()
+    cart: cartStore.getState(),
+    auth: authStore.getState()
 });
 
 export default Container.create(CreateContainer);
