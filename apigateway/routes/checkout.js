@@ -15,17 +15,13 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
-//Ensures that the user is authenticated prior to calling into this route
-const authService = require('../services/auth');
-router.use(authService.isUserLoggedIn);
-
 router.post('/', function stickerRouteCheckout(req, res) {
 
     var orderJson = {
-        'Id': guid.raw(),
-        'FullName' : req.body['checkout-name'],
-        'Email' : req.body['checkout-email'],
-        'Items' : req.body['checkout-items']
+        Id: guid.raw(),
+        FullName : req.body['checkout-name'],
+        Email : req.body['checkout-email'],
+        Items : req.body['checkout-items']
     };
 
     request({

@@ -1,5 +1,6 @@
 'use strict';
 
+//TODO: This functionality is temporary until integated with the new cart microservice; note that this currently calls into the "dummy" data access layer
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();

@@ -10,7 +10,7 @@ var tables = {
     userTable: userModel(sql).user
 };
 
-exports.setupAuthDataStore = function setup() {
+const setupAuthDataStore = () => {
     var retryCount = dbSettings.retryCount;
     var retryIntervalMS = dbSettings.retryIntervalMS;
 
@@ -40,14 +40,13 @@ exports.setupAuthDataStore = function setup() {
     }();
 };
 
-exports.findUserProfile = findUserProfile;
-function findUserProfile(userId) {
+const findUserProfile = (userId) => {
     //Attempts to find the authenticated user in MySQL by their id; this is the id that is stored within the
     //server side session.
     return tables.userTable.findById(userId, { include: [{ model: tables.profileTable }] });
-}
+};
 
-exports.deleteUserProfile = function performDelete(userId) {
+const deleteUserProfile = function performDelete(userId) {
     //Deletes the user profile from MySQL; this is needed when the user logs out.
     return findUserProfile(userId)
         .then(function finishDelete(user) {
@@ -59,7 +58,7 @@ exports.deleteUserProfile = function performDelete(userId) {
         });
 };
 
-exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType, displayName, firstName, lastName, email) {
+const findOrCreateUserProfile = (userId, authType, displayName, firstName, lastName, email) => {
     //When a user is authenticated, checks to see if the user already exists in MySQL; if it doesn't,
     //this user and profile is created.
     return tables.userTable.findOrCreate({
@@ -91,7 +90,7 @@ exports.findOrCreateUserProfile = function performFindOrCreate(userId, authType,
         });
 };
 
-exports.isUserLoggedIn = function isAuthenticated(req, res, next) {
+const verifyUserLoggedIn = (req, res, next) => {
 
     //Determines whether the user is authenticated; if they are, execution will continue to the next middleware
     //function.  Otherwise, the user will be redirected to login.
@@ -103,3 +102,5 @@ exports.isUserLoggedIn = function isAuthenticated(req, res, next) {
     console.log('Authentication failed');
     res.redirect('/users/auth?p=B2C_1_SignInAndSignUp');
 };
+
+module.exports = {setupAuthDataStore, findUserProfile, deleteUserProfile, findOrCreateUserProfile, verifyUserLoggedIn};

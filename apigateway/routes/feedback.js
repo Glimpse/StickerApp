@@ -11,10 +11,6 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
-//Ensures that the user is authenticated prior to calling into this route
-var authService = require('../services/auth');
-router.use(authService.isUserLoggedIn);
-
 router.post('/', function stickerRouteFeedback(req, res) {
   
     var feedbackJson = {

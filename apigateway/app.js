@@ -6,7 +6,6 @@ var path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
-
 const authService = require('./services/auth');
 const serverConnection = require('./config/database-config').serverConnection;
 
@@ -19,6 +18,7 @@ const checkout = require('./routes/checkout');
 
 const app = express();
 
+//TODO: Need to update this to correct path; need to take into account docker as well here
 const PROJECT_ROOT = path.join(__dirname, '..');
 app.set('etag', false);
 app.set('views', path.join(PROJECT_ROOT, 'apigateway', 'templates'));
@@ -43,17 +43,22 @@ app.use(passport.session());
 // setup the auth's datastore where authenticated user\profile data is stored
 authService.setupAuthDataStore();
 
-app.use('/feedback', feedback);
+//All routes that do NOT require auth should be added here (prior to authService.verifyUserLoggedIn being added as a route)
 app.use('/users', users);
 app.use('/browse', browse);
-app.use('/cart', cart);
-app.use('/create', create);
-app.use('/checkout', checkout);
+app.use('/cart', cart); //TODO: Will require auth
+app.use('/create', create); //TODO: Will require auth
 
 app.get('/', function stickerRootRedirection(req, res) {
     console.log('app.js: redirecting to browse');
     res.redirect('/browse');
 });
+
+//Ensures that the user is authenticated prior to calling into routes
+//All routes requiring auth should be added after authService.verifyUserLoggedIn
+app.use(authService.verifyUserLoggedIn);
+app.use('/checkout', checkout);
+app.use('/feedback', feedback);
 
 const server = app.listen(serverConnection.port, () => {
     console.log(`Sticker server running on port ${server.address().port}`);
