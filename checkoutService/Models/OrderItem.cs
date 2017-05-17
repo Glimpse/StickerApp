@@ -7,7 +7,7 @@ namespace CheckoutService.Models
     {
         [BsonId]
         [Required]
-        public string ItemId {get; set;}
+        public string Id {get; set;}
 
         [Required]
         public int Quantity {get; set;}

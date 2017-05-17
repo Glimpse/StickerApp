@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace CheckoutService.Models
 {
     public class Feedback
     {
-        [Required]
+       [BsonId]
+       [Required]
         public string Id {get; set;}
 
         [Required]

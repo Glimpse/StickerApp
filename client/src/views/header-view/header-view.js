@@ -1,6 +1,7 @@
 import React from 'react';
 import classname from 'classname';
 import Icon from 'react-fa';
+import { createChangedAuthProfileAction } from '../../actions/auth-actions';
 
 import './header-view.css';
 
@@ -10,7 +11,25 @@ export default React.createClass({
 
     propTypes: {
         pageName: React.PropTypes.string.isRequired,
-        cartCount: React.PropTypes.number.isRequired
+        cartCount: React.PropTypes.number.isRequired,
+        userProfile: React.PropTypes.object
+    },
+
+    onAuthLinkClicked() {
+        createChangedAuthProfileAction();
+    },
+
+    showAuth() {
+        //Only show the log in and log out links when running with the new apit gateway which will result in the userProfile being passed to this view; if running
+        //against the existing "monolith" service, userProfile will be null and we won't show these links.
+        if (this.props.userProfile != null) {
+            return (!this.props.userProfile.isAuthenticated ? (
+                    <div className="gs-header-authinfo">Welcome, Guest! <a href="/users/auth?p=B2C_1_SignInAndSignUp" onClick={this.onAuthLinkClicked}>Log In</a></div>
+                    ) : (
+                    <div className="gs-header-authinfo">Welcome, {this.props.userProfile.userFriendlyId}! <a href="users/auth/logout" onClick={this.onAuthLinkClicked}>Log Out</a></div>
+                    )
+            );
+        }
     },
 
     render() {
@@ -18,6 +37,7 @@ export default React.createClass({
             <div className="gs-header">
                 <div className="gs-header-decorator">
                     <a href="/"><img src="/img/Logo.png" /></a>
+                    {this.showAuth()}
                 </div>
                 <div className="gs-header-navbar">
                     <div className="gs-header-navbar-spacer"></div>
