@@ -12,7 +12,6 @@ const FeedbackContainer = React.createClass({
     render() {
         return (
             <div>
-                {/*<HeaderView pageName="cart" cartCount="0" isAuthenticated={this.state.auth.isAuthenticated} userFriendlyId={this.state.auth.userFriendlyId}/>*/}
                  <  HeaderView pageName="cart" cartCount={0} userProfile={this.state.auth.userProfile} />
                 <FeedbackView />
             </div>

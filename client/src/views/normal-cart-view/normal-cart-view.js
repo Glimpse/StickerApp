@@ -77,6 +77,9 @@ export default React.createClass({
 
     render() {
         const items = this.props.items;
+        const fullName = this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.fullName : '';
+        const email = this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.email : '';
+
         // TODO: items is an array of IDs, need to look up or convert to whole objects
         const itemRows = items.map((item) => <ItemRow item={item} key={item.id} />);
         return (
@@ -103,14 +106,14 @@ export default React.createClass({
                     <div className="gs-cartview-normal-rightpane">
                         <div className="gs-cartview-normal-rightpane-label">Name</div>
                         <input placeholder="required"
-                            value={this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.fullName : ''}
-                            className="gs-cartview-normal-rightpane-input" name="checkout-name" min="1" />
+                            value={fullName}
+                            className="gs-cartview-normal-rightpane-input" name="checkout-name" min="1"/>
                         <div className="gs-cartview-normal-rightpane-label">Email Address</div>
                         <input placeholder="required"
-                            value={this.props.userProfile != null && this.props.userProfile.isAuthenticated ? this.props.userProfile.email : ''}
-                            className="gs-cartview-normal-rightpane-input" name="checkout-email" type="email" min="1" />
+                            value={email}
+                            className="gs-cartview-normal-rightpane-input" name="checkout-email" type="email" min="1"/>
                         <div className="gs-cartview-normal-rightpane-disclaimer">
-                            *You will be able to pick up your stickers right after the demo. No physical address required
+                            *You will be able to pick up your stickers right after the order is processed. No physical address is required.
                         </div>
                         <div className="gs-cartview-normal-rightpane-submitcontainer">
                             <button type="submit" className="gs-cartview-normal-rightpane-submit">

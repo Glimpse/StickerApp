@@ -69,7 +69,10 @@ router.get('/auth/user_profile', function getUserProfileData(req, res) {
     if (req.user && req.user.profile){
         //Get a user friendly identifier to display by the client when the user logs in.  First we attempt to show the first name, otherwise we use the display name.
         userFriendlyId = req.user.profile.firstName ? req.user.profile.firstName : req.user.profile.displayName;
-        fullName = req.user.profile.firstName + ' ' + req.user.profile.lastName;
+        
+        var firstName = req.user.profile.firstName ? req.user.profile.firstName : '';
+        var lastName = req.user.profile.lastName ? req.user.profile.lastName : '';
+        fullName = firstName + ' ' + lastName;
         email = req.user.profile.email;
     }
 
