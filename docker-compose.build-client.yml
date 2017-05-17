@@ -1,0 +1,15 @@
+version: '2'
+
+# build the code in ./client, placing output in ./apigateway/client/dist:
+# docker-compose -f docker-compose.build-client.yml up
+
+services:
+  builder:
+    build:
+      context: ./client-builder
+      dockerfile: Dockerfile
+    command: npm run build
+    volumes:
+    - ./client:/build/client:ro
+    - ./apigateway/client/dist:/build/client/dist:rw
+    - /build/node_modules
