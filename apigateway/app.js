@@ -7,7 +7,6 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const authService = require('./services/auth');
-const serverConnection = require('./config/database-config').serverConnection;
 
 const users = require('./routes/users');
 const browse = require('./routes/browse');
@@ -18,12 +17,10 @@ const checkout = require('./routes/checkout');
 
 const app = express();
 
-//TODO: Need to update this to correct path; need to take into account docker as well here
-const PROJECT_ROOT = path.join(__dirname, '..');
 app.set('etag', false);
-app.set('views', path.join(PROJECT_ROOT, 'apigateway', 'templates'));
+app.set('views', path.join(__dirname, 'templates'));
 app.set('view engine', 'pug');
-app.use(express.static(path.join(PROJECT_ROOT, 'client', 'dist')));
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 require('./strategy/aad-b2c')();
 require('./strategy/passport')();
@@ -60,8 +57,8 @@ app.use(authService.verifyUserLoggedIn);
 app.use('/checkout', checkout);
 app.use('/feedback', feedback);
 
-const server = app.listen(serverConnection.port, () => {
-    console.log(`Sticker server running on port ${server.address().port}`);
+const server = app.listen(process.env.PORT, () => {
+    console.log(`apigateway listening on port ${server.address().port}`);
 });
 
 module.exports = app;
