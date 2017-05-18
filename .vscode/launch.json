@@ -60,6 +60,16 @@
         {
             "type": "node",
             "request": "attach",
+            "name": "Attach (apigateway)",
+            "address": "localhost",
+            "port": 5859,
+            "localRoot": "${workspaceRoot}/apigateway",
+            "remoteRoot": "/app/",
+            "restart": true
+        },
+        {
+            "type": "node",
+            "request": "attach",
             "name": "Attach (session service)",
             "address": "localhost",
             "port": 5757,
