@@ -1,8 +1,4 @@
-
 'use strict';
-
-//TODO: This is temporary using the "dummy" data access layer in order to interact with the cart; this will be removed when integrated with new cart microservice
-const dataAccess = require('../temp/db/data-access');
 
 const express = require('express');
 const request = require('request');
@@ -16,13 +12,20 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/', function stickerRouteCheckout(req, res) {
-
     var orderJson = {
         Id: guid.raw(),
-        FullName : req.body['checkout-name'],
-        Email : req.body['checkout-email'],
-        Items : req.body['checkout-items']
+        FullName: req.body['checkout-name'],
+        Email: req.body['checkout-email'],
+        Items: req.body['checkout-items']
     };
+
+    // TODO this uses the sticker service's test route to produce a kafka
+    // message for this order. The checkout service should do that itself.
+    request.post({
+        url: `${process.env.STICKER_SERVICE_URL}/test/checkout`,
+        body: { 'checkout-items': orderJson.Items },
+        json: true
+    }, (error, response) => { });
 
     request({
         url: checkoutServiceUrl + '/api/order/',
@@ -32,19 +35,24 @@ router.post('/', function stickerRouteCheckout(req, res) {
         headers: {
             //Pass the current authenticated user's id to the checkout microservice
             'stickerUserId': req.user.id
-        }},
-        function finishAddOrder(error){
-            if (error) {
-                console.log('Adding Order failed: ' + error);
-            } else {
-                console.log('Order added');
-            }
-            
-            //TODO: Need to update this when the new cart microservice is integrated; for now, calls into the "dummy" data access layer
-            dataAccess.clearCart(req.body.token, () => {
-                res.render('index', { pageTitle: 'Checkout', entry: 'checkout' });
+        }
+    }, function finishAddOrder(error) {
+        if (error) {
+            console.log('Adding Order failed: ' + error);
+            res.sendStatus(500);
+        } else {
+            console.log('Order added');
+            request.delete({
+                url: `${process.env.SESSION_SERVICE_URL}/cart`,
+                headers: { 'stickerUserId': req.user.id }
+            }, (error, response) => {
+                if (error) {
+                    console.error(error);
+                }
+                res.render('index', { pageTitle: 'Checkout', entry: 'checkout' })
             });
-        });
+        }
+    });
 });
 
 module.exports = router;
