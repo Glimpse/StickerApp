@@ -1,0 +1,122 @@
+version: '2'
+
+services:
+  client-rebuilder:
+    build:
+      context: ./client-builder
+      dockerfile: Dockerfile
+    command: sh -c "npm run build && npm run watch"
+    container_name: client-rebuilder
+    volumes:
+    - ./client:/build/client:rw
+    - ./apigateway/client/dist:/build/client/dist:rw
+    - /build/node_modules
+
+  authdb:
+    build:
+      context: ./authdb
+      dockerfile: Dockerfile
+    container_name: authdb
+    ports:
+    - 3306:3306
+
+  apigateway:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile.dev
+    container_name: apigateway
+    depends_on:
+    - client-rebuilder
+    ports:
+    - 5859:5859
+    - 3000:3000
+    environment:
+      CHECKOUT_SERVICE_URL: http://checkout:5000
+      DB_URL: mysql://root@authdb/StickerDemoApp
+      NODE_ENV: development
+      PORT: 3000
+      SESSION_SERVICE_URL: http://session:4000
+      STICKER_SERVICE_URL: http://stickers:2000
+    volumes:
+    - ./apigateway:/app
+    - /app/node_modules
+    command: nodemon --inspect=0.0.0.0:5859 --legacy-watch app.js
+    links:
+    - authdb
+
+  checkout:
+    build:
+      context: ./checkoutService
+      dockerfile: Dockerfile
+    container_name: checkout
+    ports:
+    - 5000:5000
+    environment:
+      databasesettings__host: mongo
+    links:
+    - mongo
+
+  stickers:
+    depends_on:
+    - kafka
+    - redis
+    build:
+      context: ./stickerService
+      dockerfile: Dockerfile.dev
+    container_name: stickers
+    env_file:
+    - ./stickerService/debug.env
+    command: nodemon --inspect=0.0.0.0:5959 --legacy-watch index.js
+    ports:
+    - 2000:2000
+    - 5959:5959
+    links:
+    - mongo
+    volumes:
+    - ./stickerService:/app
+    - /app/node_modules
+
+  session:
+    depends_on:
+    - kafka
+    - redis
+    - stickers
+    build:
+      context: ./sessionService
+      dockerfile: Dockerfile.dev
+    container_name: session
+    env_file:
+    - ./sessionService/debug.env
+    command: nodemon --inspect=0.0.0.0:5757 --legacy-watch index.js
+    ports:
+    - 4000:4000
+    - 5757:5757
+    volumes:
+    - ./sessionService:/app
+    - /app/node_modules
+
+  mongo:
+    image: mongo:3.5.5
+
+  redis:
+    image: redis:3.2.8-alpine
+    ports:
+    - 6379:6379
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+    - 2181:2181
+
+  kafka:
+    depends_on:
+    - zookeeper
+    image: wurstmeister/kafka
+    ports:
+    - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CREATE_TOPICS: TrendingStickers:1:1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
