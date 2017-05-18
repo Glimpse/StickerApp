@@ -1,9 +1,8 @@
 var Sequelize = require('sequelize');
-var dbSettings = require('../config/database-config').dbSettings;
 var userModel = require('../models/user');
 var profileModel = require('../models/profile');
 
-var sql = new Sequelize(dbSettings.URI);
+var sql = new Sequelize(process.env.DB_URL);
 
 var tables = {
     profileTable: profileModel(sql).profile,
@@ -11,8 +10,8 @@ var tables = {
 };
 
 const setupAuthDataStore = () => {
-    var retryCount = dbSettings.retryCount;
-    var retryIntervalMS = dbSettings.retryIntervalMS;
+    var retryCount = 10;
+    var retryIntervalMS = 20000;
 
     var tryAuthenticate = function tryAuthenticate() {
         sql.authenticate()

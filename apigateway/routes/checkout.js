@@ -9,7 +9,7 @@ const request = require('request');
 const guid = require('guid');
 
 //This route calls into the ASP.NET Core checkout microservice
-const checkoutServiceUrl = require('../config/services-config').checkoutServiceUrl; //TODO: add env url lookup
+const checkoutServiceUrl = process.env.CHECKOUT_SERVICE_URL;
 
 const router = express.Router();
 const bodyParser = require('body-parser');
