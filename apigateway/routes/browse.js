@@ -1,13 +1,9 @@
 'use strict';
 
-//TODO: This functionality is temporary until integated with the new cart microservice; note that this currently calls into the "dummy" data access layer
-const express = require('express');
-const bodyParser = require('body-parser');
-const router = express.Router();
+const request = require('request');
+const router = require('express').Router();
 
-const dataAccess = require('../temp/db/data-access');
-
-router.use(bodyParser.json());
+const URL = `${process.env.STICKER_SERVICE_URL}/stickers`;
 
 router.get('/', function stickerRouteBrowse(req, res) {
     const renderData = { pageTitle: 'Browse', entry: 'browse' };
@@ -18,21 +14,14 @@ router.get('/', function stickerRouteBrowse(req, res) {
 });
 
 router.get('/api/items', function stickerRouteApiBrowse(req, res) {
-    // Do things with req.query.tags
-    let tags;
-    if (req.query.tags) {
-        tags = req.query.tags.split(',');
-    }
-
-    dataAccess.getStickers(tags, (items) => {
-        console.info('%d stickers found', items.length);
-        if (tags) {
-            console.log('Tags used in filter: ', tags);
+    const options = { url: URL, qs: { tags: req.query.tags }, json: true };
+    request.get(options, (error, response) => {
+        if (error) {
+            console.error(error);
+            res.sendStatus(500);
+        } else {
+            res.send({ items: response.body });
         }
-
-        res.send({
-            items
-        });
     });
 });
 

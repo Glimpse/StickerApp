@@ -6,6 +6,7 @@ var path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const proxy = require('http-proxy-middleware');
 const authService = require('./services/auth');
 
 const users = require('./routes/users');
@@ -14,13 +15,15 @@ const cart = require('./routes/cart');
 const feedback = require('./routes/feedback');
 const create = require('./routes/create');
 const checkout = require('./routes/checkout');
+const trending = require('./routes/trending');
+const history = require('./routes/history');
 
 const app = express();
 
+app.use(express.static(path.resolve(__dirname, 'client', 'dist')));
+app.set('views', path.resolve(__dirname, 'templates'));
 app.set('etag', false);
-app.set('views', path.join(__dirname, 'templates'));
 app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 require('./strategy/aad-b2c')();
 require('./strategy/passport')();
@@ -45,6 +48,11 @@ app.use('/users', users);
 app.use('/browse', browse);
 app.use('/cart', cart); //TODO: Will require auth
 app.use('/create', create); //TODO: Will require auth
+app.use('/history', history);
+app.use('/trending', trending);
+
+// proxy socket communication to the sticker service
+app.use('/socket.io', proxy(process.env.STICKER_SERVICE_URL, { ws: true }));
 
 app.get('/', function stickerRootRedirection(req, res) {
     console.log('app.js: redirecting to browse');
