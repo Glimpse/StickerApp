@@ -3,9 +3,7 @@
 **Setup and launch:**
 
 ```bash
-npm install
-npm run build
-npm start
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
 Then open your browser to [http://localhost:3000](http://localhost:3000)
