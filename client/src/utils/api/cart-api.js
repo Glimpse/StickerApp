@@ -17,7 +17,7 @@ export function addItem(item) {
     request({
         url: `cart/api/items/${item.id}`,
         method: 'PUT',
-        payload: { item }
+        payload: { item, token: localStorage.token }
     }, (err, res) => {
         if (err) {
             createUpdateFailedAction();
