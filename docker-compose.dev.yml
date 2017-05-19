@@ -30,13 +30,8 @@ services:
     ports:
     - 5859:5859
     - 3000:3000
-    environment:
-      CHECKOUT_SERVICE_URL: http://checkout:5000
-      DB_URL: mysql://root@authdb/StickerDemoApp
-      NODE_ENV: development
-      PORT: 3000
-      SESSION_SERVICE_URL: http://session:4000
-      STICKER_SERVICE_URL: http://stickers:2000
+    env_file:
+    - ./apigateway/debug.env
     volumes:
     - ./apigateway:/app
     - /app/node_modules
