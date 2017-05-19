@@ -19,7 +19,6 @@ namespace CheckoutService
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile("databasesettings.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -33,7 +32,7 @@ namespace CheckoutService
             services.AddOptions();
 
             // Register the IConfiguration instance which MyOptions binds against.
-            services.Configure<DatabaseSettings>(Configuration);
+            services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
 
             // Add service for interacting with Mongo DB
             services.AddSingleton<IMongoDbService, MongoDbService>();
@@ -45,11 +44,8 @@ namespace CheckoutService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            if (env.EnvironmentName == "Development")
-            {
-                loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-                loggerFactory.AddDebug();
-            }
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
             app.UseMvc();
         }
