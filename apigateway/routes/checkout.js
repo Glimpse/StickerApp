@@ -19,14 +19,6 @@ router.post('/', function stickerRouteCheckout(req, res) {
         Items: req.body['checkout-items']
     };
 
-    // TODO this uses the sticker service's test route to produce a kafka
-    // message for this order. The checkout service should do that itself.
-    request.post({
-        url: `${process.env.STICKER_SERVICE_URL}/test/checkout`,
-        body: { 'checkout-items': orderJson.Items },
-        json: true
-    }, (error, response) => { });
-
     request({
         url: checkoutServiceUrl + '/api/order/',
         method: 'POST',
@@ -49,7 +41,7 @@ router.post('/', function stickerRouteCheckout(req, res) {
                 if (error) {
                     console.error(error);
                 }
-                res.render('index', { pageTitle: 'Checkout', entry: 'checkout' })
+                res.render('index', { pageTitle: 'Checkout', entry: 'checkout' });
             });
         }
     });

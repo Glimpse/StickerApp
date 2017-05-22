@@ -1,11 +1,15 @@
+using CheckoutService.Models;
+using Confluent.Kafka;
+using Confluent.Kafka.Serialization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using MongoDB.Driver;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
-using CheckoutService.Models;
-using Microsoft.Extensions.Primitives;
 
 namespace CheckoutService.Controllers
 {
@@ -13,10 +17,18 @@ namespace CheckoutService.Controllers
     public class OrderController : Controller
     {
         IMongoDbService _database;
+        Producer<Null, string> _producer;
+        string _topic;
 
-        public OrderController(IMongoDbService database)
+        public OrderController(IMongoDbService database, IOptions<KafkaSettings> kafkaSettings)
         {
             _database = database;
+
+            var config = new Dictionary<string, object> {
+                { "bootstrap.servers", kafkaSettings.Value.Broker }
+            };
+            _producer = new Producer<Null, string>(config, null, new StringSerializer(Encoding.UTF8));
+            _topic = kafkaSettings.Value.Topic;
         }
 
         [HttpGet]
@@ -47,7 +59,7 @@ namespace CheckoutService.Controllers
             {
                 return BadRequest($"Invalid order values. Order:{order} UserId:{userId}");
             }
-            
+
             //When an Order is created, the service assumes that any Items that should be added to the order will be sent
             //in the same POST request.  If no items are specified, an empty list of Items will be created by default.
             if (order.Items == null)
@@ -57,6 +69,11 @@ namespace CheckoutService.Controllers
 
             order.UserId = userId;
             await _database.GetOrderCollection().InsertOneAsync(order);
+
+            // produce a Kafka record so the sticker service can update popularity scores
+            var recordJson = JsonConvert.SerializeObject(order.Items);
+            var deliveryReport = await _producer.ProduceAsync(_topic, null, recordJson);
+
             return Created(order.Id, order);
         }
 

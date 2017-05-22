@@ -105,7 +105,7 @@ function increaseItemScoreAsync(itemId, increaseAmount) {
 };
 
 // we expect msg.value is JSON for this:
-// [ { "item_id": string, "quantity": number? }, ... ]
+// [ { "id": string, "quantity": number? }, ... ]
 // where "quantity" is undefined for view events
 const messageMalformed = offset => `message at offset ${offset} is malformed`;
 function validateMessage(message) {
@@ -119,11 +119,11 @@ function validateMessage(message) {
 
         let events = [];
         for (const element of parsedMessage) {
-            if (!element.item_id) {
+            if (!element.id) {
                 return reject(messageMalformed(message.offset));
             }
 
-            let event = { item_id: element.item_id };
+            let event = { id: element.id };
             if (element.quantity) {
                 const quantity = parseInt(element.quantity);
                 if (!Number.isInteger(quantity)) {
@@ -161,7 +161,7 @@ async function handleMessage(msg) {
         // arbitrary multiplier: 1 order is worth 3 views
         // (item.quantity is undefined for view events)
         const scoreIncrement = item.quantity ? item.quantity * 3 : 1;
-        return increaseItemScoreAsync(item.item_id, scoreIncrement);
+        return increaseItemScoreAsync(item.id, scoreIncrement);
     }));
     console.log(scoreMessages.join('\n'));
 
