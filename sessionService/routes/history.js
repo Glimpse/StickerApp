@@ -24,7 +24,7 @@ router.put('/:item_id', async (req, res) => {
     // send a Kafka message to inform the sticker service of the view event
     const payload = [{
         topic: process.env.KAFKA_TOPIC,
-        messages: JSON.stringify([{ item_id: req.params.item_id }])
+        messages: JSON.stringify([{ id: req.params.item_id }])
     }];
     kafkaProducer.send(payload, (err, result) => {
         if (err) {

@@ -19,9 +19,9 @@ router.post('/checkout', (req, res) => {
 
     const orderedStickers = Object.keys(checkoutItems).map(item => {
         return {
-            item_id: checkoutItems[item].id,
+            id: checkoutItems[item].id,
             quantity: checkoutItems[item].quantity
-        }
+        };
     });
 
     const payloads = [{
@@ -39,7 +39,7 @@ router.post('/checkout', (req, res) => {
 
 // emit a Kafka message for a view event
 router.get('/view/:item_id', (req, res) => {
-    const message = JSON.stringify([{ item_id: req.params.item_id }]);
+    const message = JSON.stringify([{ id: req.params.item_id }]);
     const payload = [{
         topic: process.env.KAFKA_TOPIC,
         messages: message
