@@ -13,12 +13,17 @@ namespace CheckoutService.Models
         [Required]
         public string UserId {get; set;}
 
-        [Required]
+        // the client will send an empty name when none is provided
+        // in the user's profile, which is possible because a name
+        // needn't be provided at signup
+        [Required(AllowEmptyStrings = true)]
         public string FullName {get; set;}
 
         [Required]
+        [DataType(DataType.EmailAddress)]
         public string Email {get; set;}
 
+        [Required]
         public IList<OrderItem> Items {get; set;}
     }
 }
