@@ -38,6 +38,6 @@ io.on('connection', function sendTrendingItems(socket) {
 });
 itemPopularity.on('newTopItems', topItems => io.send(topItems));
 
-server.listen(process.env.PORT, () => {
+server.listen(process.env.PORT || 8080, () => {
     console.log(`Sticker service listening on ${server.address().port}`);
 });
