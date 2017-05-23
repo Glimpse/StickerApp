@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -19,10 +19,5 @@
     "pug": "^2.0.0-rc.1",
     "request": "^2.81.0",
     "sequelize": "^3.30.4"
-  },
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^3.0.1",
-    "lodash": "^4.17.4"
   }
 }
