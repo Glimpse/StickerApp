@@ -22,6 +22,6 @@ app.use((req, res, next) => {
 app.use('/cart', cart);
 app.use('/history', history);
 
-const listener = app.listen(process.env.PORT, () => {
+const listener = app.listen(process.env.PORT || 8080, () => {
     console.log(`Session service listening on ${listener.address().port}`);
 });

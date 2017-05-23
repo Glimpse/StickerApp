@@ -65,7 +65,7 @@ app.use(authService.verifyUserLoggedIn);
 app.use('/checkout', checkout);
 app.use('/feedback', feedback);
 
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT || 8080, () => {
     console.log(`apigateway listening on port ${server.address().port}`);
 });
 
