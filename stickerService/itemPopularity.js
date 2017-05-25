@@ -20,14 +20,14 @@ const redisClient = redis.createClient({
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD || undefined,
     tls: process.env.REDIS_TLS,
-    retry_strategy: options => {
+    retryStrategy: options => {
         // retry every 2 seconds for 10 seconds; crash, if that doesn't suffice
         if (options.total_retry_time < 10 * 1000) {
             console.log(`${options.error}, retrying...`);
             return 2000;
         }
 
-        throw `can't connect to redis`;
+        throw 'Unable to conect to redis';
     }
 });
 redisClient.on('error', err => {
@@ -81,7 +81,7 @@ function decayScores() {
             messages.push(`  ${itemId}: ${oldScore} -> ${newScore}`);
         }
 
-        redisClient.zadd([REDIS_KEY, ...newScores], (err, result) => {
+        redisClient.zadd([REDIS_KEY, ...newScores], (err) => {
             if (err) {
                 messages.push(`  score update failed: ${err}`);
             } else {
@@ -90,7 +90,7 @@ function decayScores() {
             console.log(messages.join('\n'));
         });
     });
-};
+}
 
 function increaseItemScoreAsync(itemId, increaseAmount) {
     return new Promise((resolve, reject) => {
@@ -102,7 +102,7 @@ function increaseItemScoreAsync(itemId, increaseAmount) {
             }
         });
     });
-};
+}
 
 // we expect msg.value is JSON for this:
 // [ { "id": string, "quantity": number? }, ... ]
@@ -182,13 +182,13 @@ kafkaConsumer.on('error', error => {
     if (error.name === 'TopicsNotExistError') {
         // when using docker-compose we may try to connect before the
         // kafka container creates the topic--try again in 10 seconds
-        kafkaConsumer.removeTopics([KAFKA_TOPIC], (error, numberRemoved) => {
+        kafkaConsumer.removeTopics([KAFKA_TOPIC], () => {
             console.log('... retrying in 10 seconds');
             setTimeout(() => {
                 kafkaConsumer.addTopics([KAFKA_TOPIC], (error, added) => {
                     if (error) { throw error; }
                     console.log(`... added topic ${added}`);
-                })
+                });
             }, 10000);
         });
     }

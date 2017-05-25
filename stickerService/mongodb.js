@@ -56,20 +56,20 @@ exports.getStickersAsync = (tags, itemIds) => {
 
         if (itemIds instanceof Array) {
             query.id = { $in: itemIds };
-        } else if (typeof itemIds === "string") {
+        } else if (typeof itemIds === 'string') {
             query.id = { $in: [itemIds] };
         }
 
         return findDocs(db, stickerCollectionName, query);
     });
-}
+};
 
 exports.addStickersAsync = items => {
     return connect().then(async db => {
         const result = await insertDocs(db, stickerCollectionName, items);
         return result.ops;
     });
-}
+};
 
 exports.initializeDatabaseAsync = () => {
     const initialData = require('./initial-data');
@@ -77,4 +77,4 @@ exports.initializeDatabaseAsync = () => {
         .then(db => db.dropDatabase())
         .then(() => exports.addStickersAsync(initialData))
         .then(disconnect);
-}
+};

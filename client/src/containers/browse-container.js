@@ -22,7 +22,7 @@ const BrowseContainer = React.createClass({
         }
         return (
             <div>
-                 <HeaderView pageName="browse" cartCount={this.state.cart.items.length} userProfile={this.state.auth.userProfile} />
+                <HeaderView pageName="browse" cartCount={this.state.cart.items.length} userProfile={this.state.auth.userProfile}  />
                 <TagListView tags={this.state.browse.tags} selectedTags={this.state.browse.selectedTags} />
                 <StickerListView items={this.state.browse.items} createExpandItemAction={createExpandItemAction} />
                 {expandedItem}

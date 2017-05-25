@@ -26,7 +26,7 @@ router.put('/:item_id', async (req, res) => {
         topic: process.env.KAFKA_TOPIC,
         messages: JSON.stringify([{ id: req.params.item_id }])
     }];
-    kafkaProducer.send(payload, (err, result) => {
+    kafkaProducer.send(payload, (err) => {
         if (err) {
             // only log errors because failure doesn't affect this service's
             // core purpose (also the reason not to wait for the callback)

@@ -19,7 +19,7 @@ exports.addStickersAsync = items => {
             }
         });
     });
-}
+};
 
 exports.getStickersAsync = (tags, itemIds) => {
     return new Promise((resolve, reject) => {
@@ -39,8 +39,8 @@ exports.getStickersAsync = (tags, itemIds) => {
             }
         });
     });
-}
+};
 
 exports.getStickerAsync = async id => {
     return (await this.getStickersAsync(null, id))[0];
-}
+};

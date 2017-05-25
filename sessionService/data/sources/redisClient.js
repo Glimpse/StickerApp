@@ -5,14 +5,14 @@ const redisClient = require('redis').createClient({
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD || undefined,
     tls: process.env.REDIS_TLS,
-    retry_strategy: options => {
+    retryStrategy: options => {
         // retry every 2 seconds for 10 seconds; crash, if that doesn't suffice
         if (options.total_retry_time < 10 * 1000) {
             console.log(`${options.error}, retrying...`);
             return 2000;
         }
 
-        throw `can't connect to redis`;
+        throw 'unable to connect to redis';
     }
 });
 redisClient.on('error', err => {

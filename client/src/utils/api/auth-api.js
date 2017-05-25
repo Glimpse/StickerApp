@@ -1,14 +1,20 @@
-import { createAuthChangedAction } from '../../actions/auth-actions';
+import { createGetUserProfileRequestAction, createGetUserProfileSuccessAction, createGetUserProfileFailAction } from '../../actions/auth-actions';
 import { request } from '../api';
 
 export function getUserProfile() {
-    request({
-        url: 'users/auth/user_profile'
-    }, (err, res) => {
-        if (err) {
-            return;
+
+    console.log('User profile requested.');
+    createGetUserProfileRequestAction();
+    
+    request({url: 'users/auth/user_profile'}, 
+        (err, res) => {
+            if (err || !res.profile) {
+                console.log('Request for user profile failed.');
+                createGetUserProfileFailAction();
+                return;
+            }
+            console.log('Request for user profile succeeded.');
+            createGetUserProfileSuccessAction(res.profile);
         }
-        console.log('Requesting updated user profile after auth changed');
-        createAuthChangedAction(res.profile);
-    }
-);}
+    );
+}
