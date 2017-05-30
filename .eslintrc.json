@@ -25,7 +25,7 @@
         "no-unused-vars": "warn",
         "constructor-super": "warn",
         "valid-typeof": "warn",
-        "camelcase": "error",
+        "camelcase": "warn",
         "curly": "error",
         "func-names": "error",
         "space-in-parens": "error",

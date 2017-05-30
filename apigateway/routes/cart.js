@@ -4,10 +4,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const request = require('request');
 
-const appInsights = require("applicationinsights");
-const iKey = require('../config/appinsights-config').aiSettings.iKey;
-const aiClient = appInsights.getClient(iKey);
-
 const CART_URL = `${process.env.SESSION_SERVICE_URL}/cart`;
 const router = express.Router();
 
@@ -33,8 +29,6 @@ router.use((req, res, next) => {
 
 router.get('/api/items', function getCart(req, res) {
 
-    aiClient.trackRequest(req, res);
-
     request.get(CART_URL, {
         headers: { stickerUserId: req.user.id },
         json: true
@@ -49,8 +43,6 @@ router.get('/api/items', function getCart(req, res) {
 });
 
 router.delete('/api/items/:item_id', function removeItem(req, res) {
-
-    aiClient.trackRequest(req, res);
 
     console.log('Item targeted', req.params.item_id);
     request.delete(`${CART_URL}/${req.params.item_id}`, {
@@ -67,8 +59,6 @@ router.delete('/api/items/:item_id', function removeItem(req, res) {
 });
 
 router.put('/api/items/:item_id', function addItem(req, res) {
-
-    aiClient.trackRequest(req, res);
 
     request.put(`${CART_URL}/${req.params.item_id}`, {
         headers: { stickerUserId: req.user.id },

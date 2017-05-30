@@ -27,19 +27,7 @@ gulp.task('lint-client', function lintClient() {
         plugins: ['react']
     }, eslintConfig);
 
-    // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
-    // write some output to the wrong directory.  I don't understand why, but not returning anything
-    // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src('./client/src/**/*.js')
-        // eslint() attaches the lint output to the "eslint" property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint(config))
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failAfterError last.
-        .pipe(eslint.failAfterError());
+    addInputFiles('./client/src/**/*.js', config);
 });
 
 gulp.task('lint-sessionService', function lintSessionService() {
@@ -52,19 +40,7 @@ gulp.task('lint-sessionService', function lintSessionService() {
         }
     }, eslintConfig);
 
-    // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
-    // write some output to the wrong directory.  I don't understand why, but not returning anything
-    // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src('./sessionService/**/*.js')
-        // eslint() attaches the lint output to the "eslint" property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint(config))
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failAfterError last.
-        .pipe(eslint.failAfterError());
+    addInputFiles('./sessionService/**/*.js', config);
 });
 
 gulp.task('lint-gateway', function lintGateway() {
@@ -83,10 +59,10 @@ gulp.task('lint-gateway', function lintGateway() {
         }
     }, eslintConfig);
 
-    // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
-    // write some output to the wrong directory.  I don't understand why, but not returning anything
-    // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*'])
+        // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
+    // write some output to the wrong directory - not returning anything here seems to work around this issue
+    // and the build still fails if there is a linter error.
+    gulp.src(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*', '!./apigateway/client/**/*'])
         // eslint() attaches the lint output to the "eslint" property
         // of the file object so it can be used by other modules.
         .pipe(eslint(config))
@@ -96,6 +72,8 @@ gulp.task('lint-gateway', function lintGateway() {
         // To have the process exit with an error code (1) on
         // lint error, return the stream and pipe to failAfterError last.
         .pipe(eslint.failAfterError());
+
+    //addInputFiles(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*'], config);
 });
 
 gulp.task('lint-stickerService', function lintStickerService() {
@@ -114,19 +92,7 @@ gulp.task('lint-stickerService', function lintStickerService() {
         }
     }, eslintConfig);
 
-    // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
-    // write some output to the wrong directory.  I don't understand why, but not returning anything
-    // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src(['./stickerService/**/*.js', '!./apigateway/node_modules/**/*'])
-        // eslint() attaches the lint output to the "eslint" property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint(config))
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failAfterError last.
-        .pipe(eslint.failAfterError());
+    addInputFiles(['./stickerService/**/*.js', '!./apigateway/node_modules/**/*'], config);
 });
 
 gulp.task('lint-tests', function lintTests() {
@@ -145,10 +111,14 @@ gulp.task('lint-tests', function lintTests() {
         }
     }, eslintConfig);
 
+    addInputFiles(['./tests/**/*.js', '!./apigateway/node_modules/**/*'], config);
+});
+
+function addInputFiles(inputFiles, config) {
     // note that when we return the stream here, builds from the root (e.g., `gulp lint build`) will
-    // write some output to the wrong directory.  I don't understand why, but not returning anything
-    // here seems to work around the issue and the build still fails if there is a linter error.
-    gulp.src(['./tests/**/*.js', '!./apigateway/node_modules/**/*'])
+    // write some output to the wrong directory - not returning anything here seems to work around this issue
+    // and the build still fails if there is a linter error.
+    gulp.src(inputFiles)
         // eslint() attaches the lint output to the "eslint" property
         // of the file object so it can be used by other modules.
         .pipe(eslint(config))
@@ -158,7 +128,7 @@ gulp.task('lint-tests', function lintTests() {
         // To have the process exit with an error code (1) on
         // lint error, return the stream and pipe to failAfterError last.
         .pipe(eslint.failAfterError());
-});
+}
 
 gulp.task('run-tests', function() {
     return gulp.src(['tests/*.js'], {read: false})

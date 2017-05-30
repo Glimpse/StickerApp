@@ -6,7 +6,7 @@ export function getUserProfile() {
     console.log('User profile requested.');
     createGetUserProfileRequestAction();
     
-    request({url: 'users/auth/user_profile'}, 
+    request({url: 'users/auth/user_profile'},
         (err, res) => {
             if (err || !res.profile) {
                 console.log('Request for user profile failed.');

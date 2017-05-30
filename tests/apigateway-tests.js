@@ -52,7 +52,7 @@ describe('API Gateway Tests:', function testGateway() {
                     .expect(200)
                     .expect('Content-Type', /json/);
             })
-            .then (function finishTEst(res) {
+            .then (function finishTest(res) {
                 res.body.items.should.have.lengthOf(0);
             });
         });

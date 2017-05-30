@@ -20,7 +20,7 @@ const redisClient = redis.createClient({
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD || undefined,
     tls: process.env.REDIS_TLS,
-    retryStrategy: options => {
+    retry_strategy: options => {
         // retry every 2 seconds for 10 seconds; crash, if that doesn't suffice
         if (options.total_retry_time < 10 * 1000) {
             console.log(`${options.error}, retrying...`);

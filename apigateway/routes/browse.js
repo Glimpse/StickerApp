@@ -3,15 +3,9 @@
 const request = require('request');
 const router = require('express').Router();
 
-const appInsights = require("applicationinsights");
-const iKey = require('../config/appinsights-config').aiSettings.iKey;
-const aiClient = appInsights.getClient(iKey);
-
 const URL = `${process.env.STICKER_SERVICE_URL}/stickers`;
 
 router.get('/', function stickerRouteBrowse(req, res) {
-
-    aiClient.trackRequest(req, res);
 
     const renderData = { pageTitle: 'Browse', entry: 'browse' };
 
@@ -21,8 +15,6 @@ router.get('/', function stickerRouteBrowse(req, res) {
 });
 
 router.get('/api/items', function stickerRouteApiBrowse(req, res) {
-
-    aiClient.trackRequest(req, res);
 
     const options = { url: URL, qs: { tags: req.query.tags }, json: true };
     request.get(options, (error, response) => {

@@ -4,10 +4,6 @@ const express = require('express');
 const request = require('request');
 const guid = require('guid');
 
-const appInsights = require("applicationinsights");
-const iKey = require('../config/appinsights-config').aiSettings.iKey;
-const aiClient = appInsights.getClient(iKey);
-
 //This route calls into the ASP.NET Core checkout microservice
 const checkoutServiceUrl = process.env.CHECKOUT_SERVICE_URL;
 
@@ -16,8 +12,6 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/', function stickerRouteFeedback(req, res) {
-  
-    aiClient.trackRequest(req, res);
 
     var feedbackJson = {
         'Id': guid.raw(),
