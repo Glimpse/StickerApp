@@ -7,9 +7,9 @@
 // recent activity has more weight than past activity: scores decay over time.
 
 const events = require('events');
-const kafka = require('kafka-node');
 const redis = require('redis');
 const db = require('./mongodb');
+const kafka = require('no-kafka');
 
 const eventEmitter = new events.EventEmitter();
 exports.on = (event, listener) => eventEmitter.on(event, listener);
@@ -152,51 +152,41 @@ function topItemsChanged(a, b) {
     return false;
 }
 
-async function handleMessage(msg) {
-    const items = await validateMessage(msg);
-    const priorTopItems = await exports.topKAsync(5);
+const messageHandler = messageSet => {
+    messageSet.forEach(async m => {
+        let items;
+        try {
+            items = await validateMessage(m.message);
+        } catch (error) {
+            console.error('message validation failed', error);
+        }
 
-    // increase item scores
-    const scoreMessages = await Promise.all(items.map(item => {
-        // arbitrary multiplier: 1 order is worth 3 views
-        // (item.quantity is undefined for view events)
-        const scoreIncrement = item.quantity ? item.quantity * 3 : 1;
-        return increaseItemScoreAsync(item.id, scoreIncrement);
-    }));
-    console.log(scoreMessages.join('\n'));
+        const priorTopItems = await exports.topKAsync(5);
 
-    const newTopItems = await exports.topKAsync(5);
-    if (topItemsChanged(newTopItems, priorTopItems)) {
-        eventEmitter.emit('newTopItems', newTopItems);
-    }
-}
+        // increase item scores
+        const scoreMessages = await Promise.all(items.map(item => {
+            // arbitrary multiplier: 1 order is worth 3 views
+            // (item.quantity is undefined for view events)
+            const scoreIncrement = item.quantity ? item.quantity * 3 : 1;
+            return increaseItemScoreAsync(item.id, scoreIncrement);
+        }));
+        console.log(scoreMessages.join('\n'));
 
-// this consumer reacts to item views and checkouts
-const KAFKA_TOPIC = process.env.KAFKA_TOPIC;
-const kafkaConsumer = new kafka.Consumer(
-    new kafka.Client(process.env.KAFKA_HOST),
-    [{ topic: KAFKA_TOPIC }]
-);
-kafkaConsumer.on('error', error => {
-    console.log(`kafkaConsumer error: ${error}`);
-    if (error.name === 'TopicsNotExistError') {
-        // when using docker-compose we may try to connect before the
-        // kafka container creates the topic--try again in 10 seconds
-        kafkaConsumer.removeTopics([KAFKA_TOPIC], (error, numberRemoved) => {
-            console.log('... retrying in 10 seconds');
-            setTimeout(() => {
-                kafkaConsumer.addTopics([KAFKA_TOPIC], (error, added) => {
-                    if (error) { throw error; }
-                    console.log(`... added topic ${added}`);
-                })
-            }, 10000);
-        });
-    }
-});
-kafkaConsumer.on('message', async msg => {
-    try {
-        await handleMessage(msg);
-    } catch (error) {
-        console.error('error handling Kafka message', error);
-    }
-});
+        const newTopItems = await exports.topKAsync(5);
+        if (topItemsChanged(newTopItems, priorTopItems)) {
+            console.log('top items changed', newTopItems);
+            eventEmitter.emit('newTopItems', newTopItems);
+        }
+    });
+};
+
+const consumer = new kafka.SimpleConsumer({ connectionString: process.env.KAFKA_HOST });
+consumer.init()
+    .then(async () => {
+        if (process.env.NODE_ENV === 'development') {
+            // In the docker-compose dev environment this block will likely execute before
+            // the Kafka container has created the topic, causing an error; so, we wait.
+            await new Promise(resolve => setTimeout(resolve, 20000));
+        }
+        consumer.subscribe(process.env.KAFKA_TOPIC, { time: kafka.LATEST_OFFSET }, messageHandler);
+    });
