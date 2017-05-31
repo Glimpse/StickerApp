@@ -19,5 +19,6 @@ redisClient.on('error', err => {
     // swallow errors to allow retries as specified in the retry_strategy above
     console.log(`redis client error: ${err}`);
 });
+redisClient.on('ready', () => console.log('redis client ready'));
 
 module.exports = redisClient;
