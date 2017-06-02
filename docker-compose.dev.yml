@@ -61,7 +61,7 @@ services:
     container_name: stickers
     env_file:
     - ./stickerService/debug.env
-    command: nodemon --inspect=0.0.0.0:5959 --legacy-watch index.js
+    command: /bin/sh -c "node init-db.js && nodemon --inspect=0.0.0.0:5959 --legacy-watch index.js"
     ports:
     - 2000:2000
     - 5959:5959

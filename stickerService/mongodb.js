@@ -71,10 +71,9 @@ exports.addStickersAsync = items => {
     });
 }
 
-exports.initializeDatabaseAsync = () => {
-    const initialData = require('./initial-data');
+exports.initializeDatabaseAsync = data => {
     return connect()
         .then(db => db.dropDatabase())
-        .then(() => exports.addStickersAsync(initialData))
+        .then(() => exports.addStickersAsync(data))
         .then(disconnect);
 }
