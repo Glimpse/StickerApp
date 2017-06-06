@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: apigateway
+{{ include "stickerapp.common.labels" . | indent 4 }}
+  name: "{{.Release.Name}}-apigateway"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    component: apigateway
+    release: "{{.Release.Name}}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: checkout
+{{ include "stickerapp.common.labels" . | indent 4 }}
+  name: "{{.Release.Name}}-checkout"
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    component: checkout
+    release: "{{.Release.Name}}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: session
+{{ include "stickerapp.common.labels" . | indent 4 }}
+  name: "{{.Release.Name}}-session"
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    component: session
+    release: "{{.Release.Name}}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: stickers
+{{ include "stickerapp.common.labels" . | indent 4 }}
+  name: "{{.Release.Name}}-stickers"
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    component: stickers
+    release: "{{.Release.Name}}"
