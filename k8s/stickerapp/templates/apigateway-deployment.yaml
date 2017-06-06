@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}-apigateway"
+spec:
+  template:
+    metadata:
+      labels:
+        component: apigateway
+{{ include "stickerapp.common.labels" . | indent 8 }}
+    spec:
+      containers:
+      - name: "{{.Release.Name}}-apigateway"
+        image: "{{ template "registry.name" . }}stickerapp/apigateway:v1"
+        imagePullPolicy: "{{.Values.imagePullPolicy}}"
+        env:
+        - name: AD_CLIENT_ID
+          value: "{{.Values.azureActiveDirectory.clientId}}"
+        - name: AD_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: "{{ template "activeDirectory.secret.name" . }}"
+              key: "client-secret"
+        - name: AD_DESTROY_SESSION_URL
+          value: "{{.Values.azureActiveDirectory.destroySessionUrl}}"
+        - name: AD_REDIRECT_URL
+          value: "{{.Values.azureActiveDirectory.redirectUrl}}"
+        - name: AD_TENANT
+          value: "{{.Values.azureActiveDirectory.tenant}}"
+        - name: CHECKOUT_SERVICE_URL
+          value: "http://{{.Release.Name}}-checkout"
+        - name: MYSQL_URL
+          value: "{{ template "mysql.connectionString" . }}"
+        - name: NODE_ENV
+          value: production
+        - name: SESSION_SERVICE_URL
+          value: "http://{{.Release.Name}}-session"
+        - name: STICKER_SERVICE_URL
+          value: "http://{{.Release.Name}}-stickers"
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: "{{ template "registry.secret.name" . }}"

@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}-checkout"
+spec:
+  template:
+    metadata:
+      labels:
+        component: checkout
+{{ include "stickerapp.common.labels" . | indent 8 }}
+    spec:
+      containers:
+      - name: "{{.Release.Name}}-checkout"
+        image: "{{ template "registry.name" . }}stickerapp/checkout:v1"
+        imagePullPolicy: "{{.Values.imagePullPolicy}}"
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: production
+        - name: ASPNETCORE_URLS
+          value: http://*:8080
+        - name: MongoDb__DbName
+          value: CheckoutDB
+        - name: MongoDb__ConnectionString
+          value: "{{ template "mongo.connectionString" .}}"
+        - name: MongoDb__OrderCollectionName
+          value: orders
+        - name: MongoDb__FeedbackCollectionName
+          value: feedbackEntries
+        - name: Kafka__Broker
+          value: "{{ template "kafka.broker" . }}"
+        - name: Kafka__Topic
+          value: "{{ template "kafka.topic" . }}"
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: "{{ template "registry.secret.name" . }}"

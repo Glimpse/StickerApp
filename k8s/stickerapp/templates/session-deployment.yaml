@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}-session"
+spec:
+  template:
+    metadata:
+      labels:
+        component: session
+{{ include "stickerapp.common.labels" . | indent 8 }}
+      annotations:
+        # using beta syntax until new ACS clusters are k8s 1.6 (they're 1.5.3 at time of writing)
+        # this init container polls the sticker service for 13 minutes, completing successfully when something is listening
+        pod.beta.kubernetes.io/init-containers: '[
+            {
+              "name": "sticker-service-poll",
+              "image": "alpine:3.6",
+              "imagePullPolicy": "IfNotPresent",
+              "command": [
+                "sh", "-c",
+                "for i in $(seq 1 60); do nc -z -w3 {{printf "%s-stickers" .Release.Name}} 80 && exit 0 || sleep 10s; done; exit 1"
+              ]
+            }
+        ]'
+    spec:
+      containers:
+      - name: "{{.Release.Name}}-session"
+        image: "{{ template "registry.name" . }}stickerapp/session:v1"
+        imagePullPolicy: "{{.Values.imagePullPolicy}}"
+        env:
+        - name: KAFKA_HOST
+          value: "{{ template "zookeeper.service.name" . }}"
+        - name: KAFKA_TOPIC
+          value: "{{ template "kafka.topic" . }}"
+        - name: NODE_ENV
+          value: production
+{{ include "redis-env" . | indent 8 }}
+        - name: STICKER_SERVICE_URL
+          value: "http://{{.Release.Name}}-stickers"
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: "{{ template "registry.secret.name" . }}"
