@@ -75,4 +75,28 @@ router.put('/:item_id', async (req, res) => {
     }
 });
 
+// Transfers one user's cart items to another user's cart
+// (useful for when a user begins a session with a temporary
+// un-auth'd user ID and then later logs in)
+router.put('/transfer/:oldUserId', async (req, res) => {
+    try {
+        // If the old user has cart items, transfer them to 
+        // the current user's cart.
+        if ((await dataAccess.getCartAsync(req.params.oldUserId)).length > 0) {
+            // Merge the two carts
+            await dataAccess.mergeCartsAsync(req.userId, [req.userId, req.params.oldUserId]);
+            
+            // Once the carts are merged, it doesn't make sense to leave the partial
+            // cart for the original anonymous user.
+            await dataAccess.clearCartAsync(req.params.oldUserId);
+        }
+
+        // Return the user's current cart items (after merging, if necessary)
+        await sendItems(req.userId, res);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

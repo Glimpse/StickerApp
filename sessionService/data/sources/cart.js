@@ -31,6 +31,19 @@ exports.addToCartAsync = (userId, itemId) => {
     });
 }
 
+exports.mergeCartsAsync = (destUserId, userIds) => {
+    return new Promise((resolve, reject) => {
+        var args = [cartKey(destUserId)].concat(userIds.map(userId => cartKey(userId)));
+        redisClient.sunionstore(args, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 exports.removeFromCartAsync = (userId, itemId) => {
     return new Promise((resolve, reject) => {
         redisClient.srem([cartKey(userId), itemId], (error, result) => {
