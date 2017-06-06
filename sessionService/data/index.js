@@ -8,6 +8,7 @@ module.exports = {
     addToCartAsync: cart.addToCartAsync,
     clearCartAsync: cart.clearCartAsync,
     getCartAsync: cart.getCartAsync,
+    mergeCartsAsync: cart.mergeCartsAsync,
     removeFromCartAsync: cart.removeFromCartAsync,
     addItemToHistoryAsync: history.addItemToHistoryAsync,
     getHistoryAsync: history.getHistoryAsync,
