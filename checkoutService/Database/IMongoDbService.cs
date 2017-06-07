@@ -1,11 +1,14 @@
 using MongoDB.Driver;
 using CheckoutService.Models;
 
-public interface IMongoDbService
+namespace CheckoutService
 {
-    IMongoDatabase GetConnection();
+    public interface IMongoDbService
+    {
+        IMongoDatabase GetConnection();
 
-    IMongoCollection<Feedback> GetFeedbackCollection();
+        IMongoCollection<Feedback> GetFeedbackCollection();
 
-    IMongoCollection<Order> GetOrderCollection();
+        IMongoCollection<Order> GetOrderCollection();
+    }
 }
