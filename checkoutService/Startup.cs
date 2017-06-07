@@ -25,7 +25,7 @@ namespace CheckoutService
             // Adds services required for using options.
             services.AddOptions();
 
-            services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
+            services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDb"));
             services.Configure<KafkaSettings>(Configuration.GetSection("Kafka"));
 
             services.AddSingleton<IMongoDbService, MongoDbService>();
