@@ -9,12 +9,9 @@ release: "{{ .Release.Name }}"
 {{- printf "%s-adb2c-secrets" .Release.Name | trunc 24 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "kafka.broker" -}}
-{{- printf "%s-broker-kf" .Release.Name -}}
-{{- end -}}
-
 {{- define "kafka.topic" -}}
-{{- default "sticker-popularity" .Values.kafkaTopic -}}
+{{- $name := default "sticker-activity" .Values.kafkaTopic }}
+{{- printf "%s-%s" .Release.Name $name -}}
 {{- end -}}
 
 {{- define "mongo.connectionString" -}}
@@ -49,8 +46,4 @@ release: "{{ .Release.Name }}"
 
 {{- define "registry.secret.name" -}}
 {{- printf "%s-stickerapp-registry-secret" .Release.Name -}}
-{{- end -}}
-
-{{- define "zookeeper.service.name" -}}
-{{- printf "%s-zookeeper-zk" .Release.Name -}}
 {{- end -}}
