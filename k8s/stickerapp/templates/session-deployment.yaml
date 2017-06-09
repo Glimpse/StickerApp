@@ -15,7 +15,7 @@ spec:
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
         - name: KAFKA_HOST
-          value: "{{ template "zookeeper.service.name" . }}"
+          value: "{{ .Values.kafkaBroker }}"
         - name: KAFKA_TOPIC
           value: "{{ template "kafka.topic" . }}"
         - name: NODE_ENV

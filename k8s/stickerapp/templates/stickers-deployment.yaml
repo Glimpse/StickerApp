@@ -15,7 +15,7 @@ spec:
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
         - name: KAFKA_HOST
-          value: "{{ template "kafka.broker" . }}:9092"
+          value: "{{ .Values.kafkaBroker }}"
         - name: KAFKA_TOPIC
           value: "{{ template "kafka.topic" . }}"
         - name: MONGO_URL
@@ -32,7 +32,7 @@ spec:
         command: ["sh", "-c", "for i in $(seq 1 60); do java -jar kafka-topic-client.jar && exit 0 || sleep 10s; done; exit 1"]
         env:
         - name: ZOOKEEPER_CONNECT
-          value: "{{ template "zookeeper.service.name" . }}"
+          value: "{{ .Values.zookeeperConnect }}"
         - name: TOPIC_NAME
           value: "{{ template "kafka.topic" . }}"
       - name: init-db

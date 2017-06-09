@@ -27,7 +27,7 @@ spec:
         - name: MongoDb__FeedbackCollectionName
           value: feedbackEntries
         - name: Kafka__Broker
-          value: "{{ template "kafka.broker" . }}"
+          value: "{{ .Values.kafkaBroker }}"
         - name: Kafka__Topic
           value: "{{ template "kafka.topic" . }}"
         ports:
