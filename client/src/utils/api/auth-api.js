@@ -1,4 +1,4 @@
-import { createGetUserProfileRequestAction, createGetUserProfileSuccessAction, createGetUserProfileFailAction } from '../../actions/auth-actions';
+import * as profileActions from '../../actions/auth-actions';
 import { request } from '../api';
 
 export function getUserProfile() {

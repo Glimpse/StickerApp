@@ -73,7 +73,7 @@ gulp.task('lint-gateway', function lintGateway() {
         // lint error, return the stream and pipe to failAfterError last.
         .pipe(eslint.failAfterError());
 
-    //addInputFiles(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*'], config);
+    addInputFiles(['./apigateway/**/*.js', '!./apigateway/node_modules/**/*'], config);
 });
 
 gulp.task('lint-stickerService', function lintStickerService() {
