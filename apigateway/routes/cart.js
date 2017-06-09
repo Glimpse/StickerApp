@@ -39,6 +39,7 @@ router.use((req, res, next) => {
 });
 
 router.get('/api/items', function getCart(req, res) {
+
     request.get(CART_URL, {
         headers: { stickerUserId: req.user.id },
         json: true
@@ -53,6 +54,7 @@ router.get('/api/items', function getCart(req, res) {
 });
 
 router.delete('/api/items/:item_id', function removeItem(req, res) {
+
     console.log('Item targeted', req.params.item_id);
     request.delete(`${CART_URL}/${req.params.item_id}`, {
         headers: { stickerUserId: req.user.id },
@@ -68,6 +70,7 @@ router.delete('/api/items/:item_id', function removeItem(req, res) {
 });
 
 router.put('/api/items/:item_id', function addItem(req, res) {
+
     request.put(`${CART_URL}/${req.params.item_id}`, {
         headers: { stickerUserId: req.user.id },
         body: req.body,

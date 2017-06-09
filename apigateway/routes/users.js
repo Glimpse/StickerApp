@@ -15,6 +15,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 //redirects the user back to this application at /auth/return.
 router.get('/auth',
   function authenticate(req, res, next) {
+
       passport.authenticate('azuread-openidconnect',
           {
               response: res,
@@ -25,7 +26,7 @@ router.get('/auth',
 
 //Called by POST /auth/return.
 var authenticate = function authenticate(req, res, next) {
-    
+
     //Check to see if the user has chosen to reset their password
     var error = req.body['error_description'];
     if (error && error.indexOf('AADB2C90118') != -1) {
@@ -48,6 +49,7 @@ var authenticate = function authenticate(req, res, next) {
 router.post('/auth/return', authenticate, function authRedirect(req, res) { res.redirect('/browse'); });
 
 router.get('/auth/logout', function logout(req, res){
+
     var userId = req.user.id;
     req.session.destroy(function deleteUser() {
         authService.deleteUserProfile(userId)
@@ -62,6 +64,7 @@ router.get('/auth/logout', function logout(req, res){
 //Used to get the user's profile data; this is called by the client views whenever the user logs in and out so
 //the the client has up-to-date user data.
 router.get('/auth/user_profile', function getUserProfileData(req, res) {
+
     var userFriendlyId = '';
     var fullName = '';
     var email = '';

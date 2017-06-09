@@ -1,5 +1,9 @@
 'use strict';
 
+//Load AI right away since it injects instrumentation into many subsequent loaded libraries
+const appInsights = require('applicationinsights');
+const iKey = require('./config/appinsights-config').aiSettings.iKey;
+
 var express = require('express');
 var session = require('express-session');
 var path = require('path');
@@ -19,6 +23,11 @@ const trending = require('./routes/trending');
 const history = require('./routes/history');
 
 const app = express();
+
+//Configure app insights track all requests
+appInsights.setup(iKey).setAutoDependencyCorrelation(true);
+appInsights.start();
+app.use((req, res, next) => { appInsights.getClient(iKey).trackRequest(req, res); next(); });
 
 app.use(express.static(path.resolve(__dirname, 'client', 'dist')));
 app.set('views', path.resolve(__dirname, 'templates'));
@@ -46,8 +55,8 @@ authService.setupAuthDataStore();
 //All routes that do NOT require auth should be added here (prior to authService.verifyUserLoggedIn being added as a route)
 app.use('/users', users);
 app.use('/browse', browse);
-app.use('/cart', cart); //TODO: Will require auth
-app.use('/create', create); //TODO: Will require auth
+app.use('/cart', cart);
+app.use('/create', create);
 app.use('/history', history);
 app.use('/trending', trending);
 

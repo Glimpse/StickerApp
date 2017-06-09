@@ -17,11 +17,11 @@ exports.getCartAsync = userId => {
             }
         });
     });
-}
+};
 
 exports.addToCartAsync = (userId, itemId) => {
     return new Promise((resolve, reject) => {
-        redisClient.sadd([cartKey(userId), itemId], (error, result) => {
+        redisClient.sadd([cartKey(userId), itemId], (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -29,7 +29,7 @@ exports.addToCartAsync = (userId, itemId) => {
             }
         });
     });
-}
+};
 
 exports.mergeCartsAsync = (destUserId, userIds) => {
     return new Promise((resolve, reject) => {
@@ -46,7 +46,7 @@ exports.mergeCartsAsync = (destUserId, userIds) => {
 
 exports.removeFromCartAsync = (userId, itemId) => {
     return new Promise((resolve, reject) => {
-        redisClient.srem([cartKey(userId), itemId], (error, result) => {
+        redisClient.srem([cartKey(userId), itemId], (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -54,11 +54,11 @@ exports.removeFromCartAsync = (userId, itemId) => {
             }
         });
     });
-}
+};
 
 exports.clearCartAsync = userId => {
     return new Promise((resolve, reject) => {
-        redisClient.del([cartKey(userId)], (error, result) => {
+        redisClient.del([cartKey(userId)], (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -66,4 +66,4 @@ exports.clearCartAsync = userId => {
             }
         });
     });
-}
+};

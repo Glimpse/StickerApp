@@ -11,7 +11,7 @@ const options = {
             return 2000;
         }
 
-        throw `can't connect to redis`;
+        throw 'unable to connect to redis';
     }
 };
 

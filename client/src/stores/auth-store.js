@@ -14,8 +14,8 @@ class AuthStore extends ReduceStore {
 
     reduce(state, action) {
         switch (action.actionType) {
-            case AUTH_ACTIONS.AUTH_CHANGED_ACTION : {
-                console.log('View triggered auth changed action');
+            case AUTH_ACTIONS.GET_PROFILE_SUCCESS_ACTION : {
+                console.log('View triggered auth action.');
                 return { userProfile: action.userProfile  };
             }
 

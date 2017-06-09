@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/', function stickerRouteFeedback(req, res) {
-  
+
     var feedbackJson = {
         'Id': guid.raw(),
         'Entry': req.body.feedback

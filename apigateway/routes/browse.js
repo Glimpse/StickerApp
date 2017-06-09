@@ -6,6 +6,7 @@ const router = require('express').Router();
 const URL = `${process.env.STICKER_SERVICE_URL}/stickers`;
 
 router.get('/', function stickerRouteBrowse(req, res) {
+
     const renderData = { pageTitle: 'Browse', entry: 'browse' };
 
     console.log('Render values: ', renderData);
@@ -14,6 +15,7 @@ router.get('/', function stickerRouteBrowse(req, res) {
 });
 
 router.get('/api/items', function stickerRouteApiBrowse(req, res) {
+
     const options = { url: URL, qs: { tags: req.query.tags }, json: true };
     request.get(options, (error, response) => {
         if (error) {

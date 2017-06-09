@@ -14,7 +14,6 @@ redisClient.on('ready', () => setInterval(decayScores, 60 * 1000));
 
 const REDIS_KEY = 'items:popularityscores';
 
-
 const eventEmitter = new events.EventEmitter();
 exports.on = (event, listener) => eventEmitter.on(event, listener);
 
@@ -60,7 +59,7 @@ function decayScores() {
             messages.push(`  ${itemId}: ${oldScore} -> ${newScore}`);
         }
 
-        redisClient.zadd([REDIS_KEY, ...newScores], (err, result) => {
+        redisClient.zadd([REDIS_KEY, ...newScores], (err) => {
             if (err) {
                 messages.push(`  score update failed: ${err}`);
             } else {
@@ -69,7 +68,7 @@ function decayScores() {
             console.log(messages.join('\n'));
         });
     });
-};
+}
 
 function increaseItemScoreAsync(itemId, increaseAmount) {
     return new Promise((resolve, reject) => {
@@ -81,7 +80,7 @@ function increaseItemScoreAsync(itemId, increaseAmount) {
             }
         });
     });
-};
+}
 
 // we expect msg.value is JSON for this:
 // [ { "id": string, "quantity": number? }, ... ]
@@ -169,3 +168,4 @@ consumer.init()
         }
         consumer.subscribe(process.env.KAFKA_TOPIC, { time: kafka.LATEST_OFFSET }, messageHandler);
     });
+

@@ -24,7 +24,7 @@ function pruneHistoryAsync(userId) {
 
             // remove the oldest elements
             const args = [historyKey(userId), 0, size - MAX_HISTORY_ENTRIES];
-            redisClient.zremrangebyrank(args, async (error, numberRemoved) => {
+            redisClient.zremrangebyrank(args, async (error) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -58,7 +58,7 @@ exports.addItemToHistoryAsync = (userId, itemId) => {
                 .catch(error => reject(error));
         });
     });
-}
+};
 
 exports.getHistoryAsync = userId => {
     return new Promise((resolve, reject) => {
@@ -71,4 +71,4 @@ exports.getHistoryAsync = userId => {
             }
         });
     });
-}
+};
