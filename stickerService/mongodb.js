@@ -2,13 +2,28 @@
 
 const { MongoClient } = require('mongodb');
 
-const url = process.env.MONGO_URL;
 const stickerCollectionName = 'stickers';
+
+function getConnectionString() {
+    const url = require('url');
+    let parsed = url.parse(process.env.MONGO_URL);
+    if (parsed.pathname === '/') {
+        // no database name specified => insert a default
+        let connectionString = url.resolve(parsed, 'stickerDb');
+
+        // resolve will remove a query string => if there was one, append it
+        return parsed.query ? `${connectionString}?${parsed.query}` : connectionString;
+    }
+
+    return process.env.MONGO_URL;
+}
+const connectionString = getConnectionString();
 
 let connection;
 function connect() {
     if (!connection) {
-        return MongoClient.connect(url).then(db => {
+        console.log(`connecting to mongodb at ${connectionString}`);
+        return MongoClient.connect(connectionString).then(db => {
             connection = db;
             return connection;
         });
@@ -71,10 +86,9 @@ exports.addStickersAsync = items => {
     });
 };
 
-exports.initializeDatabaseAsync = () => {
-    const initialData = require('./initial-data');
+exports.initializeDatabaseAsync = data => {
     return connect()
         .then(db => db.dropDatabase())
-        .then(() => exports.addStickersAsync(initialData))
+        .then(() => exports.addStickersAsync(data))
         .then(disconnect);
 };

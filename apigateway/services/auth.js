@@ -2,7 +2,7 @@ var Sequelize = require('sequelize');
 var userModel = require('../models/user');
 var profileModel = require('../models/profile');
 
-var sql = new Sequelize(process.env.DB_URL);
+var sql = new Sequelize(process.env.MYSQL_URL);
 
 var tables = {
     profileTable: profileModel(sql).profile,

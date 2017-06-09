@@ -11,36 +11,38 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.post('/', function stickerRouteCheckout(req, res) {
-
-    var orderJson = {
+router.post('/', (req, res) => {
+    var order = {
         Id: guid.raw(),
+        UserId: req.user.id,
         FullName: req.body['checkout-name'],
         Email: req.body['checkout-email'],
         Items: req.body['checkout-items']
     };
 
-    request({
+    request.post({
         url: checkoutServiceUrl + '/api/order/',
-        method: 'POST',
         json: true,
-        body: orderJson,
-        headers: {
-            //Pass the current authenticated user's id to the checkout microservice
-            'stickerUserId': req.user.id
-        }
-    }, function finishAddOrder(error) {
+        body: order
+    }, (error, response) => {
         if (error) {
-            console.log('Adding Order failed: ' + error);
+            console.error(`Could not reach checkout service: ${error}`);
             res.sendStatus(500);
+        } else if (response.statusCode > 201) {
+            // TODO ASP.NET Core describes model validation errors in its
+            // response, which we could surface in the client
+            console.log(`Order rejected by checkout service: ${JSON.stringify(response.body)}`);
+            res.sendStatus(400);
         } else {
             console.log('Order added');
+
+            // checkout succeeded, empty the cart
             request.delete({
                 url: `${process.env.SESSION_SERVICE_URL}/cart`,
-                headers: { 'stickerUserId': req.user.id }
-            }, (error) => {
+                headers: { stickerUserId: req.user.id }
+            }, (error, response) => {
                 if (error) {
-                    console.error(error);
+                    console.error(`Could not reach session service: ${error}`);
                 }
                 res.render('index', { pageTitle: 'Checkout', entry: 'checkout' });
             });

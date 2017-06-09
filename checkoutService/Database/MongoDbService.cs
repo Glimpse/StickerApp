@@ -1,59 +1,54 @@
-
-using System;
-using MongoDB.Driver;
 using CheckoutService.Models;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using System;
 
-public class MongoDbService : IMongoDbService
+namespace CheckoutService
 {
-    IMongoDatabase db = null;
-    IMongoCollection<Feedback> feedbackCollection = null;
-    IMongoCollection<Order> orderCollection = null;
-
-    public MongoDbService(IOptions<DatabaseSettings> dbSettings)
+    public class MongoDbService : IMongoDbService
     {
-        var _dbSettings = dbSettings.Value;
+        private IMongoDatabase _db;
+        private IMongoCollection<Feedback> _feedbackCollection;
+        private IMongoCollection<Order> _orderCollection;
 
-        var client = new MongoClient(_dbSettings.ConnectionUri);
-        if (client != null) 
+        public MongoDbService(IOptions<MongoDbSettings> dbSettings)
         {
-            db = client.GetDatabase(_dbSettings.DbName);
+            var _dbSettings = dbSettings.Value;
 
-            if (db != null)
+            var client = new MongoClient(_dbSettings.ConnectionString);
+            _db = client?.GetDatabase(_dbSettings.DbName);
+            _feedbackCollection = _db?.GetCollection<Feedback>(_dbSettings.FeedbackCollectionName);
+            _orderCollection = _db?.GetCollection<Order>(_dbSettings.OrderCollectionName);
+        }
+
+        public IMongoDatabase GetConnection()
+        {
+            if (_db == null)
             {
-                feedbackCollection = db.GetCollection<Feedback>(_dbSettings.FeedbackCollectionName);
-                orderCollection = db.GetCollection<Order>(_dbSettings.OrderCollectionName);
+                throw new InvalidOperationException("Unable to connect to database.");
             }
-        }
-    }
 
-    public IMongoDatabase GetConnection()
-    {
-        if (db == null)
+            return _db;
+        }
+
+        public IMongoCollection<Feedback> GetFeedbackCollection()
         {
-            throw new InvalidOperationException("Unable to connect to database.");
+            if (_feedbackCollection == null)
+            {
+                throw new InvalidOperationException("Unable to get Feedback collection.");
+            }
+
+            return _feedbackCollection;
         }
 
-        return db;
-    }
-
-    public IMongoCollection<Feedback> GetFeedbackCollection()
-    {
-        if (feedbackCollection == null)
+        public IMongoCollection<Order> GetOrderCollection()
         {
-            throw new InvalidOperationException("Unable to get Feedback collection.");
+            if (_orderCollection == null)
+            {
+                throw new InvalidOperationException("Unable to get Order collection.");
+            }
+
+            return _orderCollection;
         }
-
-        return feedbackCollection;
-    }
-
-    public IMongoCollection<Order> GetOrderCollection()
-    {
-        if (orderCollection == null)
-        {
-            throw new InvalidOperationException("Unable to get Order collection.");
-        }
-
-        return orderCollection;
     }
 }
