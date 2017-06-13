@@ -43,6 +43,7 @@ kafka:
     Servers: 1
     Memory: "1Gi"
     Storage: "1Gi"
+    Cpu: "100m"
 
 mongodb:
   persistence:
