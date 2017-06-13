@@ -6,7 +6,7 @@ metadata:
 {{ include "stickerapp.common.labels" . | indent 4 }}
   name: "{{.Release.Name}}-apigateway"
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 80
     targetPort: 8080
