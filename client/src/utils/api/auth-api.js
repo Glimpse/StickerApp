@@ -4,17 +4,17 @@ import { request } from '../api';
 export function getUserProfile() {
 
     console.log('User profile requested.');
-    createGetUserProfileRequestAction();
+    profileActions.createGetUserProfileRequestAction();
     
     request({url: 'users/auth/user_profile'},
         (err, res) => {
             if (err || !res.profile) {
                 console.log('Request for user profile failed.');
-                createGetUserProfileFailAction();
+                profileActions.createGetUserProfileFailAction();
                 return;
             }
             console.log('Request for user profile succeeded.');
-            createGetUserProfileSuccessAction(res.profile);
+            profileActions.createGetUserProfileSuccessAction(res.profile);
         }
     );
 }
