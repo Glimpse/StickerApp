@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: "{{.Release.Name}}-stickers"
-        image: "{{ template "registry.name" . }}stickerapp/stickers:v1"
+        image: "{{ template "registry.name" . }}stickerapp/stickers:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
         - name: KAFKA_BROKER
@@ -36,7 +36,7 @@ spec:
         - name: TOPIC_NAME
           value: "{{ template "kafka.topic" . }}"
       - name: init-db
-        image: "{{ template "registry.name" . }}stickerapp/stickers:v1"
+        image: "{{ template "registry.name" . }}stickerapp/stickers:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         command: ["node", "init-db.js"]
         env:
