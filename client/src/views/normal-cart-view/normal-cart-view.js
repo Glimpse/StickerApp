@@ -122,7 +122,6 @@ export default React.createClass({
                         </button>
                     </div>
                 </div>
-                
         } else {
             // If the user is not logged in, provide a button to redirect to the login page
             rightPane = 
@@ -131,7 +130,7 @@ export default React.createClass({
                         <div className="gs-cartview-normal-rightpane-submitcontainer">
                             <a className="gs-cartview-normal-rightpane-submit" href="/users/auth?p=B2C_1_SignInAndSignUp">Log In</a>
                         </div>
-                    </div>                   
+                    </div>
         }
 
         return (
