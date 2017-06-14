@@ -1,0 +1,6 @@
+controller:
+  config:
+    hsts: "false"
+    ssl-redirect: "false"
+  image:
+    tag: "0.9.0-beta.7"
