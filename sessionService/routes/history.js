@@ -6,7 +6,7 @@ const router = require('express').Router();
 
 // this producer publishes a stream of browsing events
 // the sticker service uses to calculate sticker popularity
-const kafkaProducer = new kafka.Producer({ connectionString: process.env.KAFKA_HOST });
+const kafkaProducer = new kafka.Producer({ connectionString: process.env.KAFKA_BROKER });
 kafkaProducer.init().then(() => console.log('kafka producer ready'));
 
 // get recently viewed items
