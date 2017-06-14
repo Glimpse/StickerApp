@@ -14,7 +14,7 @@ spec:
         image: "{{ template "registry.name" . }}stickerapp/stickers:v1"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
-        - name: KAFKA_HOST
+        - name: KAFKA_BROKER
           value: "{{ .Values.kafkaBroker }}"
         - name: KAFKA_TOPIC
           value: "{{ template "kafka.topic" . }}"
