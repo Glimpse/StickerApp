@@ -19,6 +19,9 @@ kafkaBroker: ""
 # zookeeperConnect is the DNS name of a zookeeper instance with port, e.g. "zookeeper:2181"
 zookeeperConnect: ""
 
+# the same tag is applied to all the app's images
+imageTag: "1.0"
+
 # By default, this chart will deploy the below charts to your cluster.
 # To instead use an external service, set its value false and provide its required values below.
 local:

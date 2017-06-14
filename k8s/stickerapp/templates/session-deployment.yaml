@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: "{{.Release.Name}}-session"
-        image: "{{ template "registry.name" . }}stickerapp/session:v1"
+        image: "{{ template "registry.name" . }}stickerapp/session:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
         - name: KAFKA_BROKER
