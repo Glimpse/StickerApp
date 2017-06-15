@@ -10,6 +10,6 @@ services:
       dockerfile: Dockerfile
     command: npm run build
     volumes:
-    - ./client:/build/client:ro
-    - ./apigateway/client/dist:/build/client/dist:rw
+    - ./client:/build/client
+    - ./apigateway/client/dist:/build/client/dist
     - /build/node_modules
