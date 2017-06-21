@@ -1,7 +1,7 @@
 require('should');
 require('supertest-as-promised');
 var request = require('supertest');
-var app = request.agent('http://localhost:8001/api/v1/proxy/namespaces/default/services/rousing-alpaca-apigateway:80');
+var app = request.agent('http://localhost:3000');
 
 describe('API Gateway Tests:', function testGateway() {
    
