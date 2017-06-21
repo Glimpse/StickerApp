@@ -13,6 +13,15 @@ registry: "stickerappregistry.azurecr.io"
 # It can be generated with generate-dockercfg.js.
 dockercfg: "eyJyZWdpc3RyeU5hbWUiOnsidXNlcm5hbWUiOiJTdGlja2VyUmVnaXN0cnkiLCJwYXNzd29yZCI6IlZnNGFMeT1TVEJFU1NEYVdWVmJMaVZGU2NidXg1dlhlIiwiZW1haWwiOiJ1bnVzZWRAYWNyLmlvIiwiYXV0aCI6IlUzUnBZMnRsY2xKbFoybHpkSEo1T2xabk5HRk1lVDFUVkVKRlUxTkVZVmRXVm1KTWFWWkdVMk5pZFhnMWRsaGwifX0="
 
+# kafkaBroker is the DNS name of a kafka broker with port, e.g. "kafka:9092"
+kafkaBroker: ""
+
+# zookeeperConnect is the DNS name of a zookeeper instance with port, e.g. "zookeeper:2181"
+zookeeperConnect: ""
+
+# the same tag is applied to all the app's images
+imageTag: "1.0"
+
 # By default, this chart will deploy the below charts to your cluster.
 # To instead use an external service, set its value false and provide its required values below.
 local:
@@ -34,17 +43,6 @@ redisPassword: ""
 imagePullPolicy: "IfNotPresent"
 
 # subchart values
-kafka:
-  Replicas: 1
-  Memory: "512Mi"
-  ImagePullPolicy: "IfNotPresent"
-  zookeeper:
-    ImagePullPolicy: "IfNotPresent"
-    Servers: 1
-    Memory: "1Gi"
-    Storage: "1Gi"
-    Cpu: "100m"
-
 mongodb:
   persistence:
     enabled: false

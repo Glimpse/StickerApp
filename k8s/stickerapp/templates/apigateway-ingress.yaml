@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "{{ printf "%s-ingress" .Release.Name }}"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+{{ include "stickerapp.common.labels" . | indent 4 }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "{{.Release.Name}}-apigateway"
+          servicePort: 80

@@ -8,49 +8,14 @@ spec:
       labels:
         component: stickers
 {{ include "stickerapp.common.labels" . | indent 8 }}
-      annotations:
-        # using beta syntax until new ACS clusters are k8s 1.6 (they're 1.5.3 at time of writing)
-        pod.beta.kubernetes.io/init-containers: '[
-            {
-              "name": "init-kafka",
-              "image": "solsson/kafka-topic-client",
-              "imagePullPolicy": "IfNotPresent",
-              "command": [
-                "sh", "-c",
-                "for i in $(seq 1 60); do java -jar kafka-topic-client.jar && exit 0 || sleep 10s; done; exit 1"
-              ],
-              "env": [
-                {
-                  "name": "ZOOKEEPER_CONNECT",
-                  "value": "{{ template "zookeeper.service.name" . }}"
-                },
-                {
-                  "name": "TOPIC_NAME",
-                  "value": "{{ template "kafka.topic" . }}"
-                }
-              ]
-            },
-            {
-              "name": "init-db",
-              "image": "{{ template "registry.name" . }}stickerapp/stickers:v1",
-              "imagePullPolicy": "{{.Values.imagePullPolicy}}",
-              "command": ["node", "init-db.js"],
-              "env": [
-                {
-                  "name": "MONGO_URL",
-                  "value": "{{ template "mongo.connectionString" .}}"
-                }
-              ]
-            }
-        ]'
     spec:
       containers:
       - name: "{{.Release.Name}}-stickers"
-        image: "{{ template "registry.name" . }}stickerapp/stickers:v1"
+        image: "{{ template "registry.name" . }}stickerapp/stickers:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
-        - name: KAFKA_HOST
-          value: "{{ template "kafka.broker" . }}:9092"
+        - name: KAFKA_BROKER
+          value: "{{ .Values.kafkaBroker }}"
         - name: KAFKA_TOPIC
           value: "{{ template "kafka.topic" . }}"
         - name: MONGO_URL
@@ -60,5 +25,22 @@ spec:
 {{ include "redis-env" . | indent 8 }}
         ports:
         - containerPort: 8080
+      initContainers:
+      - name: init-kafka
+        image: solsson/kafka-topic-client
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "for i in $(seq 1 60); do java -jar kafka-topic-client.jar && exit 0 || sleep 10s; done; exit 1"]
+        env:
+        - name: ZOOKEEPER_CONNECT
+          value: "{{ .Values.zookeeperConnect }}"
+        - name: TOPIC_NAME
+          value: "{{ template "kafka.topic" . }}"
+      - name: init-db
+        image: "{{ template "registry.name" . }}stickerapp/stickers:{{.Values.imageTag}}"
+        imagePullPolicy: "{{.Values.imagePullPolicy}}"
+        command: ["node", "init-db.js"]
+        env:
+        - name: MONGO_URL
+          value: "{{ template "mongo.connectionString" .}}"
       imagePullSecrets:
       - name: "{{ template "registry.secret.name" . }}"

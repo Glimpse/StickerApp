@@ -8,28 +8,14 @@ spec:
       labels:
         component: session
 {{ include "stickerapp.common.labels" . | indent 8 }}
-      annotations:
-        # using beta syntax until new ACS clusters are k8s 1.6 (they're 1.5.3 at time of writing)
-        # this init container polls the sticker service for 13 minutes, completing successfully when something is listening
-        pod.beta.kubernetes.io/init-containers: '[
-            {
-              "name": "sticker-service-poll",
-              "image": "alpine:3.6",
-              "imagePullPolicy": "IfNotPresent",
-              "command": [
-                "sh", "-c",
-                "for i in $(seq 1 60); do nc -z -w3 {{printf "%s-stickers" .Release.Name}} 80 && exit 0 || sleep 10s; done; exit 1"
-              ]
-            }
-        ]'
     spec:
       containers:
       - name: "{{.Release.Name}}-session"
-        image: "{{ template "registry.name" . }}stickerapp/session:v1"
+        image: "{{ template "registry.name" . }}stickerapp/session:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
-        - name: KAFKA_HOST
-          value: "{{ template "zookeeper.service.name" . }}"
+        - name: KAFKA_BROKER
+          value: "{{ .Values.kafkaBroker }}"
         - name: KAFKA_TOPIC
           value: "{{ template "kafka.topic" . }}"
         - name: NODE_ENV
@@ -39,5 +25,11 @@ spec:
           value: "http://{{.Release.Name}}-stickers"
         ports:
         - containerPort: 8080
+      initContainers:
+        # poll the sticker service for 13 minutes, complete when something is listening
+      - name: sticker-service-poll
+        image: alpine:3.6
+        command: [ "sh", "-c",
+                   "for i in $(seq 1 60); do nc -z -w3 {{printf "%s-stickers" .Release.Name}} 80 && exit 0 || sleep 10s; done; exit 1" ]
       imagePullSecrets:
       - name: "{{ template "registry.secret.name" . }}"

@@ -158,7 +158,7 @@ const messageHandler = messageSet => {
     });
 };
 
-const consumer = new kafka.SimpleConsumer({ connectionString: process.env.KAFKA_HOST });
+const consumer = new kafka.SimpleConsumer({ connectionString: process.env.KAFKA_BROKER });
 consumer.init()
     .then(async () => {
         if (process.env.NODE_ENV === 'development') {

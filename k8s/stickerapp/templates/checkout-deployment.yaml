@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: "{{.Release.Name}}-checkout"
-        image: "{{ template "registry.name" . }}stickerapp/checkout:v1"
+        image: "{{ template "registry.name" . }}stickerapp/checkout:{{.Values.imageTag}}"
         imagePullPolicy: "{{.Values.imagePullPolicy}}"
         env:
         - name: ASPNETCORE_ENVIRONMENT
@@ -27,7 +27,7 @@ spec:
         - name: MongoDb__FeedbackCollectionName
           value: feedbackEntries
         - name: Kafka__Broker
-          value: "{{ template "kafka.broker" . }}"
+          value: "{{ .Values.kafkaBroker }}"
         - name: Kafka__Topic
           value: "{{ template "kafka.topic" . }}"
         ports:

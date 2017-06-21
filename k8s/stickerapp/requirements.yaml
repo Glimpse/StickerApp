@@ -1,7 +1,4 @@
 dependencies:
-  - name: kafka
-    version: 0.1.2
-    repository: http://storage.googleapis.com/kubernetes-charts-incubator
   - name: mongodb
     version: 0.4.10
     repository: https://kubernetes-charts.storage.googleapis.com/
