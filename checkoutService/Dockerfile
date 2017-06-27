@@ -1,13 +1,13 @@
 FROM microsoft/dotnet:1.1-sdk
-
-COPY . /app
-
 WORKDIR /app
 
-RUN ["dotnet", "restore"]
+# copy csproj and restore as distinct layers
+COPY CheckoutService.csproj ./
+RUN dotnet restore
 
-RUN ["dotnet", "build"]
+# copy and build everything else
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-EXPOSE 5000/tcp
+CMD ["dotnet", "out/CheckoutService.dll", "--server.urls", "http://*:5000"]
 
-CMD ["dotnet", "run", "--server.urls", "http://*:5000"]
