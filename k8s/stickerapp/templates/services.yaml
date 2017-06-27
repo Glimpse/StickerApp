@@ -6,7 +6,9 @@ metadata:
 {{ include "stickerapp.common.labels" . | indent 4 }}
   name: "{{.Release.Name}}-apigateway"
 spec:
+{{- if .Values.useIngress }}
   type: NodePort
+{{- end }}
   ports:
   - port: 80
     targetPort: 8080
