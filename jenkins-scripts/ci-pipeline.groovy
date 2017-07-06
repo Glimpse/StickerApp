@@ -27,7 +27,7 @@ node {
    stage('Preparation') { 
     
       // Get some code from a GitHub repository
-      git 'https://github.com/nicolehaugen79/StickerApp.git'
+      git 'https://github.com/Glimpse/StickerApp.git'
       
       // Ensure helm is intialized for the Jenkins user
       sh '''helm init'''

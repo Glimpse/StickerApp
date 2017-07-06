@@ -161,7 +161,7 @@ The steps in this section describe how to use Jenkins to setup a CI pipeline for
 
 A few additional points to note:
 * If the app has never been installed, the pipeline will perform a clean install
-* If the app has been installed before, the pipeline perform an upgrade of the app
+* If the app has been installed before, the pipeline performs an upgrade of the app
 * The pipeline can be triggered to run with each change that is pushed to the GitHub repo (optionally, the pipeline may be manually triggered to make the pipeline easier to run)
 
 #### Prerequisites
@@ -229,9 +229,9 @@ There are 2 ways to trigger the pipeline script to run.
 * Or, within Jenkins, you can click the Build Now link.
 
 ## AAD Setup
-The app's authentication service is implemented as part of the API Gateway and supports both basic email and facebook authentication by using Azure AAD B2C.  The API Gateway acts as the primary entry point into th eserver by providing a wrapper over all calls to the microservices' endpoints.  The advantage of this approach is:
+The app's authentication service is implemented as part of the API Gateway and supports both basic email and facebook authentication by using Azure AAD B2C. The API Gateway acts as the primary entry point into the server by providing a wrapper over all calls to the microservices' endpoints.  The advantage of this approach is:
 
-* The gateway is responsible for ensuring that the user is authenticated before it calls into each microservice; this way, none of the microservices themselves need to worry about        authenticating the user.
+* The gateway is responsible for ensuring that the user is authenticated before it calls into each microservice; this way, none of the microservices themselves need to worry about authenticating the user.
 
 * The microservices' endpoints are not exposed publicly; only the API Gateway is able to access these endpoints which helps make the server more secure.
 
@@ -250,4 +250,3 @@ In addition, refer to the 'Create an application' and 'Create your policies' sec
 
 4. [Configure Facebook with your AAD tenant](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-setup-fb-app)
 
-Note that there are steps missing from this - the signup/login policies need to be added the new Facebook provider too.
