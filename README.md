@@ -1,12 +1,48 @@
 # Sticker E-Commerce Demo App
 
-## Running Locally
+The Sticker App is composed of 4 different microservices, most of which are implemented in Node.JS, with the exception of one that is implemented using ASP .NET Core.  This app also uses the following technologies:
+1.  React
+2.  Express
+3.  MongoDB
+4.  MySQL
+5.  Redis
+6.  Kafka
+7.  AAD
+8.  App Insights
 
+You have 3 options for deploying this app:
+
+1.  Deploy locally Docker Compose; each microservice and their required storage resources (e.g. MongoDB, MySQL, and Kafka) will run in its own Docker container on your local developer machine.
+
+2. Deploy the app to Azure Container Services using Kubernetes and Helm.  Specifically:
+* Docker images are built and pushed to an Azure Container Registry.
+* Kubernetes pulls the images from the registry and deploys the Docker containers to the cluster (each microservice and their required storage resources will run in its own Docker container on the cluster's nodes).
+* An inginx ingress controller is deployed to the cluster exposes the app's public endpoint.
+
+3. Deploy production and test versions of the app using Jenkins CI\CD Pipeline.  Specifically:
+* The CI\CD Pipeline deploys the app as described in bullet #2 above.
+* Mocha integration tests are run against the test version of the app.
+* If the tests pass, the production version of the app is upgraded with no downtime for the end user.
+
+## Running Locally
+From the root of the Sticker App project, run the following command:
 ```console
 $ docker-compose -f docker-compose.dev.yml up -d
 ```
-
 Then open your browser to [http://localhost:3000](http://localhost:3000)
+
+IMPORTANT: Additional steps are required to configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
+choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app.
+1. Refer to the below section, called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
+2. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to be "http://localhost:3000/users/auth/return".
+3. Set the following values in the apigateway\debug.env file - these are retrieved via the Azure Portal.  Specifically, click on the B2C Tenant.  Once this         opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
+* AD_ClIENT_ID (the Application ID value for the Application)
+* AD_CLIENT_SECRET (the generated Key value under the Application's Keys)
+* AD_DESTROY_SESSION (update the url to include the name of your tenant)
+* AD_TENANT (the name of your tenant)
+4. Re-run the docker-compose command
+
+As a result, you should now be able to click Log In to sign in\up using email or facebook.  You should also be able to add stickers to the cart and checkout.  Finally, you can Log Out of the app.
 
 ## Deploying to Kubernetes with Helm
 This repository includes a chart for Helm, the package manager for Kubernetes, to
@@ -190,6 +226,11 @@ Ensure that these resources have been created (if they haven't already):
   ```
 * Create an Azure VM with Jenkins installed (these instructions assume that the Jenkins server will be installed outside of the Kubernetes cluster).  To create a Jenkins VM, follow the [quick start](https://docs.microsoft.com/en-us/azure/jenkins/install-jenkins-solution-template).
 
+Connect to the Jenkins VM and install the following:
+1.) Docker
+2.) Kubectl
+3.) Helm
+
 #### Jenkins VM setup
 Once you have the Jenkins VM setup, log into the Jenkins web portal and perform the following configuration:
 
@@ -229,7 +270,11 @@ There are 2 ways to trigger the pipeline script to run.
 * Or, within Jenkins, you can click the Build Now link.
 
 ## AAD Setup
-The app's authentication service is implemented as part of the API Gateway and supports both basic email and facebook authentication by using Azure AAD B2C. The API Gateway acts as the primary entry point into the server by providing a wrapper over all calls to the microservices' endpoints.  The advantage of this approach is:
+The app's authentication service is implemented as part of the API Gateway and supports both basic email and facebook authentication by using Azure AAD B2C.  
+
+From the end user's perspective, the app provides a login link that when clicked, redirects to Azure's sign in\up page.  This page allows the user to sign in using either an AAD email account or using their Facebook account. Similarly, if the user doesn't have an account, they may choose to sign up.  Lastly, AAD B2C also easily supports resetting passwords as needed.
+
+The API Gateway acts as the primary entry point into the server by providing a wrapper over all calls to the microservices' endpoints.  The advantage of this approach is:
 
 * The gateway is responsible for ensuring that the user is authenticated before it calls into each microservice; this way, none of the microservices themselves need to worry about authenticating the user.
 
