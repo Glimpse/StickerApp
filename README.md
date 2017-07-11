@@ -32,17 +32,20 @@ $ docker-compose -f docker-compose.dev.yml up -d
 Then open your browser to [http://localhost:3000](http://localhost:3000)
 
 IMPORTANT: Additional steps are required to configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
-choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app.
+choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app, but the app will launch fine and
+provide the ability to browse and add\view stickers in the cart.
+
+Follow these steps to configure AAD:
 1. Refer to the below section, called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
 2. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to be "http://localhost:3000/users/auth/return".
-3. Set the following values in the apigateway\debug.env file - these are retrieved via the Azure Portal.  Specifically, click on the B2C Tenant.  Once this         opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
-* AD_ClIENT_ID (the Application ID value for the Application)
-* AD_CLIENT_SECRET (the generated Key value under the Application's Keys)
+3. Set the following values in the apigateway\debug.env file - these are retrieved via the Azure Portal.  Specifically, click on the B2C Tenant.  Once this opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
+* AD_ClIENT_ID (set to the Application ID value for the Application)
+* AD_CLIENT_SECRET (set to the generated Key value under the Application's Keys)
 * AD_DESTROY_SESSION (update the url to include the name of your tenant)
-* AD_TENANT (the name of your tenant)
+* AD_TENANT (set to the name of your tenant)
 4. Re-run the docker-compose command
 
-As a result, you should now be able to click Log In to sign in\up using email or facebook.  You should also be able to add stickers to the cart and checkout.  Finally, you can Log Out of the app.
+As a result, the end user should now be able to click Log In to sign in\up using email or facebook.  The user should also be able to add stickers to the cart and checkout.  Finally, the user can Log Out of the app.
 
 ## Deploying to Kubernetes with Helm
 This repository includes a chart for Helm, the package manager for Kubernetes, to
@@ -108,13 +111,13 @@ $ docker push your-registry.azurecr.io/stickerapp/stickers:1.0
 
 #### Installing the chart
 1. Open a shell in the `k8s` directory.
-1. Generate the docker-registry secret Kubernetes will use to pull the app's
+2. Generate the docker-registry secret Kubernetes will use to pull the app's
  images. The included script can do this:
     ```console
     $ node generate-dockercfg.js
     ```
 
-1. Set required values in `values.yaml` (you can provide these on the command
+3. Set required values in `values.yaml` (you can provide these on the command
  line with `--set` instead, if you don't mind a very long command line)
 
     required value | description
@@ -129,12 +132,12 @@ $ docker push your-registry.azurecr.io/stickerapp/stickers:1.0
     `kafkaBroker` | DNS name and port of a Kafka broker
     `zookeeperConnect` | DNS name and port of a ZooKeeper instance
 
-5. Collect the chart's dependencies:
+4. Collect the chart's dependencies:
     ```console
     $ helm dependency update stickerapp
     ```
 
-1. Install the chart:
+5. Install the chart:
     ```console
     $ helm install stickerapp
     NAME:   honest-deer
