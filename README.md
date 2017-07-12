@@ -1,30 +1,44 @@
 # Sticker E-Commerce Demo App
+The Sticker App allows end users to browse images from Flickr, add them to a cart, and print them as laptop stickers.  The app also shows trending stickers which reflects the most popular stickers viewed\printed by users and allows users to provide feedback on the app after they have selected to print their stickers.
 
-The Sticker App is composed of 4 different microservices, most of which are implemented in Node.JS, with the exception of one that is implemented using ASP .NET Core.  This app also uses the following technologies:
+The Sticker App is composed of 4 different microservices, most of which are implemented in Node.JS, with the exception of one that is implemented using ASP .NET Core. 
+1.  API Gateway (Node.JS): 
+* Ensures the user is authenticated prior to calling into each of the microservices; is the primary entry point into the server
+* Stores User\Profile data in MySQL
+* Implements email and facebook authentication using Passport and Azure AAD B2C
+2.  Sticker Service (Node.JS):
+* Uses Kafka to track checkout and item view events; these events are used to calculate trending stickers
+* Uses Redis to store sticker popularity scores
+* Trending sticker live updates are implemented using Websocket.io
+* Integrates with Flickr API for retrieving sticker images
+* Uses MongoDB for storing initial viewed sticker data
+3.  Session Service (Node.JS):
+* Uses Redis for storing cart and viewed sticker data
+* Uses MongoDB for updating initial viewed sticker data
+4. Checkout Service (ASP.NET Core):
+* Stores sticker order\item and feedback data in MongoDB
+
+In addition to the technologies mentioned above, this app also uses:
 1.  React
 2.  Express
-3.  MongoDB
-4.  MySQL
-5.  Redis
-6.  Kafka
-7.  AAD
-8.  App Insights
+3.  App Insights
 
+## Deployment Options
 You have 3 options for deploying this app:
 
-1.  Deploy locally Docker Compose; each microservice and their required storage resources (e.g. MongoDB, MySQL, and Kafka) will run in its own Docker container on your local developer machine.
+1.  Deploy locally using Docker Compose; each microservice and their required storage resources (e.g. MongoDB, MySQL, and Kafka) will run in its own Docker container on your local developer machine.
 
 2. Deploy the app to Azure Container Services using Kubernetes and Helm.  Specifically:
-* Docker images are built and pushed to an Azure Container Registry.
-* Kubernetes pulls the images from the registry and deploys the Docker containers to the cluster (each microservice and their required storage resources will run in its own Docker container on the cluster's nodes).
-* An inginx ingress controller is deployed to the cluster exposes the app's public endpoint.
+* Docker images will be built and pushed to an Azure Container Registry.
+* Kubernetes will pull the images from the registry and deploy the Docker containers to the cluster (each microservice and their required storage resources will run in its own Docker container on the cluster's nodes).
+* An inginx ingress controller will be deployed to the cluster that exposes the app's public endpoint.
 
-3. Deploy production and test versions of the app using Jenkins CI\CD Pipeline.  Specifically:
-* The CI\CD Pipeline deploys the app as described in bullet #2 above.
-* Mocha integration tests are run against the test version of the app.
-* If the tests pass, the production version of the app is upgraded with no downtime for the end user.
+3. Deploy production and test versions of the app using Jenkins' CI\CD Pipeline.  Specifically:
+* The CI\CD Pipeline will deploy the app as described in bullet #2 above.
+* Mocha integration tests will run against the test version of the app.
+* If the tests pass, the production version of the app will be upgraded with no downtime for the end user.
 
-## Running Locally
+## Deployment Option #1: Running Locally
 From the root of the Sticker App project, run the following command:
 ```console
 $ docker-compose -f docker-compose.dev.yml up -d
@@ -37,17 +51,17 @@ provide the ability to browse and add\view stickers in the cart.
 
 Follow these steps to configure AAD:
 1. Refer to the below section, called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
-2. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to be "http://localhost:3000/users/auth/return".
-3. Set the following values in the apigateway\debug.env file - these are retrieved via the Azure Portal.  Specifically, click on the B2C Tenant.  Once this opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
+2. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to: http://localhost:3000/users/auth/return.
+3. Set the following values in the apigateway\debug.env file (these are retrieved via the Azure Portal) - specifically, click on the B2C Tenant.  Once this opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
 * AD_ClIENT_ID (set to the Application ID value for the Application)
 * AD_CLIENT_SECRET (set to the generated Key value under the Application's Keys)
 * AD_DESTROY_SESSION (update the url to include the name of your tenant)
 * AD_TENANT (set to the name of your tenant)
 4. Re-run the docker-compose command
 
-As a result, the end user should now be able to click Log In to sign in\up using email or facebook.  The user should also be able to add stickers to the cart and checkout.  Finally, the user can Log Out of the app.
+As a result, the end user should now be able to click 'Log In' to sign in\up using email or facebook.  The user should also be able to add stickers to the cart and checkout.  Finally, the user can 'Log Out' of the app.
 
-## Deploying to Kubernetes with Helm
+## Deployment Option #2: Deploying to Kubernetes with Helm
 This repository includes a chart for Helm, the package manager for Kubernetes, to
 simplify deploying the application.
 
@@ -116,8 +130,21 @@ $ docker push your-registry.azurecr.io/stickerapp/stickers:1.0
     ```console
     $ node generate-dockercfg.js
     ```
+3. The app is reachable through the ingress controller's external IP address. To find this, inspect the ingress controller's service in the Kubernetes UI,
+ or use `kubectl` - this external IP address will be needed for configuring AAD in the next step. For example, for an ingress controller deployed as described above:
+```console
+$ kubectl get svc -l app=nginx-ingress --namespace kube-system
+NAME                                            CLUSTER-IP     EXTERNAL-IP     PORT(S)                      AGE
+awesome-narwhal-nginx-ingress-controller        10.0.190.16    52.173.17.217   80:32493/TCP,443:31437/TCP   40m
+```
 
-3. Set required values in `values.yaml` (you can provide these on the command
+4. Additional steps are required to configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
+choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app, but the app will launch fine and
+provide the ability to browse and add\view stickers in the cart.
+
+To setup AAD, refer to the below section called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
+
+5. Set required values in `values.yaml` (you can provide these on the command
  line with `--set` instead, if you don't mind a very long command line)
 
     required value | description
@@ -132,12 +159,16 @@ $ docker push your-registry.azurecr.io/stickerapp/stickers:1.0
     `kafkaBroker` | DNS name and port of a Kafka broker
     `zookeeperConnect` | DNS name and port of a ZooKeeper instance
 
-4. Collect the chart's dependencies:
+  IMPORTANT:
+  * The azureActiveDirectory setting values are retrieved via the Azure Portal after you have configured the B2C Tenant as described in bullet #4 above.  Specifically, click on the B2C Tenant to open it; then click on the Azure AD B2C Settings square on the main section of the page.
+  * In the Azure Portal for the B2C Tenant, update the Application's Reply URL to the external IP address of the cluster's ingress controller to: https://<ingress controller IP>/users/auth/return.
+
+6. Collect the chart's dependencies:
     ```console
     $ helm dependency update stickerapp
     ```
 
-5. Install the chart:
+7. Install the chart:
     ```console
     $ helm install stickerapp
     NAME:   honest-deer
@@ -163,15 +194,6 @@ po/honest-deer-session-1173111989-x7x37      1/1       Running   0          7m
  ...
 ```
 
-The app is reachable through the ingress controller's external IP address. To
- find this, inspect the ingress controller's service in the Kubernetes UI,
- or use `kubectl`. For example, for an ingress controller deployed as described above:
-```console
-$ kubectl get svc -l app=nginx-ingress --namespace kube-system
-NAME                                            CLUSTER-IP     EXTERNAL-IP     PORT(S)                      AGE
-awesome-narwhal-nginx-ingress-controller        10.0.190.16    52.173.17.217   80:32493/TCP,443:31437/TCP   40m
-```
-
 #### Modifying the running app
 Like any Kubernetes app, you can control this one with `kubectl`. For
 example, scaling the `apigateway` deployment to add a second pod:
@@ -190,7 +212,7 @@ honest-deer-apigateway   2         2         2            2           10m
 * [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
 * [Using Helm](https://docs.helm.sh/using-helm/#helm-usage)
 
-## Deploying to Kubernetes with Jenkins CI Pipeline
+## Deployment Option #3: Deploying to Kubernetes with Jenkins CI Pipeline
 The steps in this section describe how to use Jenkins to setup a CI pipeline for the Sticker App.  Specifically, each time that the pipeline runs, the following steps will be performed:
 1. Docker images are created for each of the app's microservices
 2. The Docker images are pushed to the Azure Container Registry
@@ -289,12 +311,16 @@ To configure AAD, follow these steps - this is required in order to log in\log o
 
 1. [Get an Azure AD B2C tenant](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started)
 
-2. [Register the app](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-app-registration)
-* Note that the Reply URL will need to include the external IP address of the cluster's ingress controller, e.g. "https://<ingress controller IP>/users/auth/return"
+2. [Register the Sticker App with AAD B2C](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-app-registration)
+* Note that the Reply URL will also need to be updated; refer to steps described in the above sections for the deployment option that you selected.
 
-3. [Create Sign Up\Sign In policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies#create-a-sign-up-policy)
+3. [Create policies](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-policies#create-a-sign-up-policy)
+* Specifically, follow steps to create two policies: (1) "Sign-up or sign in" policy and (2) "Password reset policy"
 
 In addition, refer to the 'Create an application' and 'Create your policies' sections that are included [here](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-devquickstarts-web-node)
 
 4. [Configure Facebook with your AAD tenant](https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-setup-fb-app)
 
+## Troubleshooting
+If the app isn't running properly, try the following:
+1.) Launch the app in Chrome and open Chrome's developer tools; look at errors\messages written to both the Network and Console tabs.
