@@ -39,27 +39,27 @@ You have 3 options for deploying this app:
 * If the tests pass, the production version of the app will be upgraded with no downtime for the end user.
 
 ## Deployment Option #1: Running Locally
-From the root of the Sticker App project, run the following command:
-```console
-$ docker-compose -f docker-compose.dev.yml up -d
-```
-Then open your browser to [http://localhost:3000](http://localhost:3000)
+1. (Optional) Configure App Insights by adding an App Insights resource.  To do this, follow the [Set up an App Insights resource](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-nodejs) section that describes how to create this resource and how to retrieve the Instrumention Key.  Finally, update AI_IKEY setting in the apigateway\debug.env file.  If you choose not to configure this, the app will still function, but there won't be any diagnostic logging collected in Azure.
 
-IMPORTANT: Additional steps are required to configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
-choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app, but the app will launch fine and
-provide the ability to browse and add\view stickers in the cart.
+2. Configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
+choose NOT to configure this, the app will only be partially functional - the end user will be unable to complete the sticker checkout process when they are using the app.  However, the app will launch fine and still provide the ability to browse and add\view stickers in the cart.
 
 Follow these steps to configure AAD:
-1. Refer to the below section, called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
-2. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to: http://localhost:3000/users/auth/return.
-3. Set the following values in the apigateway\debug.env file (these are retrieved via the Azure Portal) - specifically, click on the B2C Tenant.  Once this opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
+a. Refer to the below section, called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
+b. In the Azure Portal for the B2C Tenant that you created in the above step, update the Application's Reply URL to: http://localhost:3000/users/auth/return.
+c. Set the following values in the apigateway\debug.env file (these are retrieved via the Azure Portal) - specifically, click on the B2C Tenant.  Once this opens, click on the Azure AD B2C Settings square on the main section of the page which will open detailed settings:
 * AD_ClIENT_ID (set to the Application ID value for the Application)
 * AD_CLIENT_SECRET (set to the generated Key value under the Application's Keys)
 * AD_DESTROY_SESSION (update the url to include the name of your tenant)
 * AD_TENANT (set to the name of your tenant)
-4. Re-run the docker-compose command
 
 As a result, the end user should now be able to click 'Log In' to sign in\up using email or facebook.  The user should also be able to add stickers to the cart and checkout.  Finally, the user can 'Log Out' of the app.
+
+3. From the root of the Sticker App project, run the following command:
+```console
+$ docker-compose -f docker-compose.dev.yml up -d
+```
+Then open your browser to [http://localhost:3000](http://localhost:3000)
 
 ## Deployment Option #2: Deploying to Kubernetes with Helm
 This repository includes a chart for Helm, the package manager for Kubernetes, to
@@ -270,7 +270,7 @@ Go to Credentials->System, create the following credentials using the IDs outlin
 * Kind: Username with password, ID: DOCKER
   - Stores the Azure Container Registry user id and secret needed to push images to the registry.
 * Kind: Secret text, ID: ACR
-  - Stores the Docker secret that is needed by Kunernetes to deploy images from the registry.
+  - Stores the Docker secret that is needed by Kubernetes to deploy images from the registry.
 
 3. Create the pipeline and add the script.
 To do this, under New Item, enter a name and choose to create Pipeline.

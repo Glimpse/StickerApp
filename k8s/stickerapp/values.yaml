@@ -6,6 +6,9 @@ azureActiveDirectory:
   redirectUrl: ""
   tenant: ""
 
+# appInsightsIkey is the instrumention key for App Insights.  Required to configure diagnostics logging.
+appInsightsIkey: ""
+
 # registry is the name of a docker registry which will be prepended to the app's image names
 registry: ""
 

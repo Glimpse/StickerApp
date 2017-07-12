@@ -24,7 +24,6 @@ const history = require('./routes/history');
 
 const app = express();
 
-//Configure app insights track all requests
 appInsights.setup(iKey).setAutoDependencyCorrelation(true);
 appInsights.start();
 app.use((req, res, next) => { appInsights.getClient(iKey).trackRequest(req, res); next(); });
