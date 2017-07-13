@@ -41,7 +41,7 @@ You have 3 options for deploying this app:
 ## Deployment Option #1: Running Locally
 1. (Optional) Configure App Insights by adding an App Insights resource.  To do this, follow the [Set up an App Insights resource](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-nodejs) section that describes how to create this resource and how to retrieve the Instrumention Key.  Finally, update AI_IKEY setting in the apigateway\debug.env file.  If you choose not to configure this, the app will still function, but there won't be any diagnostic logging collected in Azure.
 
-2. Configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
+2. (Optional) Configure AAD which provides the ability for the end user to login and complete the sticker checkout process.  If you
 choose NOT to configure this, the app will only be partially functional - the end user will be unable to complete the sticker checkout process when they are using the app.  However, the app will launch fine and still provide the ability to browse and add\view stickers in the cart.
 
 Follow these steps to configure AAD:
@@ -68,7 +68,8 @@ simplify deploying the application.
 #### Prerequisites
 * A private Docker registry. Follow the Azure Container Registry [getting started guide](
   https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal)
-  to create one.
+  to create one.  NOTE: When creating the registry, choose to enable an Admin user; this user name and password will
+  be used in a later step for logging into the container registry.
 * A Kubernetes cluster. Follow the Azure Container Service [walkthrough](
   https://docs.microsoft.com/en-us/azure/container-service/container-service-kubernetes-walkthrough)
   to create one.
@@ -101,8 +102,11 @@ The chart's `imageTag` value is used for these images. It defaults to `1.0` and
 $ docker login your-registry.azurecr.io -u adminName -p password
 $ cd stickerService
 $ docker build -t your-registry.azurecr.io/stickerapp/stickers:1.0 .
-$ docker push your-registry.azurecr.io/stickerapp/stickers:1.0
+$ docker push your-registry.azurecr.io/stickerapp/stickers:1.01
 ```
+
+The user name and password for your registry can be found by going to the Azure Portal and selecting
+the Access keys blade for your registry.
 
 #### Preparing your Kubernetes cluster
 * Install Tiller, Helm's server-side component:
@@ -142,7 +146,7 @@ awesome-narwhal-nginx-ingress-controller        10.0.190.16    52.173.17.217   8
 choose NOT to configure this, the end user will be unable to complete the sticker checkout process when they are using the app, but the app will launch fine and
 provide the ability to browse and add\view stickers in the cart.
 
-To setup AAD, refer to the below section called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
+Refer to the below section called AAD Setup, to create the required AAD resources and configure the app for email and facebook authentication.
 
 5. Set required values in `values.yaml` (you can provide these on the command
  line with `--set` instead, if you don't mind a very long command line)
@@ -160,7 +164,7 @@ To setup AAD, refer to the below section called AAD Setup, to create the require
     `zookeeperConnect` | DNS name and port of a ZooKeeper instance
 
   IMPORTANT:
-  * The azureActiveDirectory setting values are retrieved via the Azure Portal after you have configured the B2C Tenant as described in bullet #4 above.  Specifically, click on the B2C Tenant to open it; then click on the Azure AD B2C Settings square on the main section of the page.
+  * The azureActiveDirectory setting values are retrieved via the Azure Portal after you have configured the B2C Tenant as described in bullet #4 above.  Specifically, click on the B2C Tenant to open it; then click on the Azure AD B2C Settings tile on the main section of the page.
   * In the Azure Portal for the B2C Tenant, update the Application's Reply URL to the external IP address of the cluster's ingress controller to: https://<ingress controller IP>/users/auth/return.
 
 6. Collect the chart's dependencies:
@@ -249,7 +253,7 @@ Ensure that these resources have been created (if they haven't already):
   $ helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
   $ helm install -n kafka --set Replicas=1 --set zookeeper.Servers=1 --set zookeeper.Storage="1Gi" incubator/kafka
   ```
-* Create an Azure VM with Jenkins installed (these instructions assume that the Jenkins server will be installed outside of the Kubernetes cluster).  To create a Jenkins VM, follow the [quick start](https://docs.microsoft.com/en-us/azure/jenkins/install-jenkins-solution-template).
+* Create an Azure VM with Jenkins installed (these instructions assume that the Jenkins server will be installed outside of the Kubernetes cluster).  To create a Jenkins VM, follow the [quick start](https://docs.microsoft.com/en-us/azure/jenkins/install-jenkins-solution-template).  However, instead of selecting to use a password to connect to the Jenkins VM, specify a public key so that you can easily SSH into it.  Also, remember the name of the user name that you specify since it will be needed in later steps.
 
 Connect to the Jenkins VM and install the following:
 1.) Docker
