@@ -1,7 +1,7 @@
 require('should');
 require('supertest-as-promised');
 var request = require('supertest');
-var app = request.agent('http://localhost:3000');
+var app = request.agent(process.env.TEST_APP_URL);
 
 describe('API Gateway Tests:', function testGateway() {
    

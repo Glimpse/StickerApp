@@ -37,6 +37,8 @@ spec:
           value: "http://{{.Release.Name}}-session"
         - name: STICKER_SERVICE_URL
           value: "http://{{.Release.Name}}-stickers"
+        - name: AI_IKEY
+          value: "{{.Values.appInsightsIkey}}"
         ports:
         - containerPort: 8080
       imagePullSecrets:
