@@ -20,6 +20,9 @@ node {
    
    // Name of the AAD tenant used for the app's B2C authentication, e.g. <tenantname>.onmicrosoft.com
    env.AAD_TENANT = ''
+
+   // URL of GIT Repo
+   env.GIT_REPO_URL = ''
    
    // URL for the internal API Gateway service that the integration tests run against
    env.TEST_APP_URL = "http://localhost:8001/api/v1/proxy/namespaces/default/services/$TEST_RELEASE-apigateway"
@@ -27,7 +30,7 @@ node {
    stage('Preparation') { 
     
       // Get some code from a GitHub repository
-      git 'https://github.com/Glimpse/StickerApp.git'
+      git '$GIT_REPO_URL'
       
       // Ensure helm is intialized for the Jenkins user
       sh '''helm init'''
@@ -37,6 +40,9 @@ node {
         sh '''docker login $ACR_NAME -u $ACR_USER -p $ACR_PASSWORD'''}
    }
    stage('Build') {
+
+       // Ensure that helm is configured
+       sh '''helm init'''
 
        // Build the client
        sh '''docker-compose -f docker-compose.build-client.yml up'''
@@ -68,14 +74,14 @@ node {
    stage('Test') {
        
         // Commands require both AAD and Docker creds   
-        withCredentials([usernamePassword(credentialsId: 'AAD', passwordVariable: 'AAD_SECRET', usernameVariable: 'AAD_CLIENTID'), string(credentialsId: 'DOCKER', variable: 'DOCKER_SECRET')]) {
+        withCredentials([usernamePassword(credentialsId: 'AAD', passwordVariable: 'AAD_SECRET', usernameVariable: 'AAD_CLIENTID'), string(credentialsId: 'DOCKER', variable: 'DOCKER_SECRET'), string(credentialsId: 'AIKEY', variable: 'AI_SECRET')]) {
          
             // Install the test version of the app; if already deployed, upgrade
             sh '''cd k8s
             if (helm ls $TEST_RELEASE | grep -q 'DEPLOYED'); then
-                helm upgrade $TEST_RELEASE stickerapp --wait --reuse-values --set useIngress="false" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
+                helm upgrade $TEST_RELEASE stickerapp --wait --reuse-values --set appInsightsIkey="$AI_SECRET" --set useIngress="false" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
             else
-                helm install stickerapp --name $TEST_RELEASE --wait --set useIngress="false" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
+                helm install stickerapp --name $TEST_RELEASE --wait --set appInsightsIkey="$AI_SECRET" --set useIngress="false" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
             fi'''
             
             // Helm's --wait command isn't sufficient to determine if deployment is ready, so check to see if the Session's deployment is available before running tests
@@ -104,14 +110,14 @@ node {
   stage('Deploy') {
 
      // Commands require both AAD and Docker creds  
-     withCredentials([usernamePassword(credentialsId: 'AAD', passwordVariable: 'AAD_SECRET', usernameVariable: 'AAD_CLIENTID'), string(credentialsId: 'DOCKER', variable: 'DOCKER_SECRET')]) {
+           withCredentials([usernamePassword(credentialsId: 'AAD', passwordVariable: 'AAD_SECRET', usernameVariable: 'AAD_CLIENTID'), string(credentialsId: 'DOCKER', variable: 'DOCKER_SECRET'), string(credentialsId: 'AIKEY', variable: 'AI_SECRET')]) {
          
           // Install the production version of the app; if already deployed, upgrade
             sh '''cd k8s
             if (helm ls $PROD_RELEASE | grep -q 'DEPLOYED'); then
-                helm upgrade $PROD_RELEASE stickerapp --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
+                helm upgrade $PROD_RELEASE stickerapp --set appInsightsIkey="$AI_SECRET" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
             else
-                helm install stickerapp --name $PROD_RELEASE --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
+                helm install stickerapp --name $PROD_RELEASE --set appInsightsIkey="$AI_SECRET" --set azureActiveDirectory.clientId="$AAD_CLIENTID" --set azureActiveDirectory.clientSecret="$AAD_SECRET" --set azureActiveDirectory.destroySessionUrl="https://login.microsoftonline.com/$AAD_TENANT/oauth2/v2.0/logout?p=B2C_1_SignIn&post_logout_redirect_uri=https://$INGRESS_IP" --set azureActiveDirectory.redirectUrl="https://$INGRESS_IP/users/auth/return" --set azureActiveDirectory.tenant="$AAD_TENANT" --set registry="$ACR_NAME" --set dockercfg="$DOCKER_SECRET" --set imageTag="$BUILD_NUMBER" --set kafkaBroker="$KAFKA_BROKER" --set zookeeperConnect="$ZK_CONNECT"
             fi'''
       } 
    }
