@@ -17,10 +17,10 @@ appInsightsIkey: "<your_iKey>"
 dockercfg: "<your_docker_key>"
 
 # kafkaBroker is the DNS name of a kafka broker with port, e.g. "kafka:9092"
-kafkaBroker: "kafka-broker-kf:9092"
+kafkaBroker: ""
 
 # zookeeperConnect is the DNS name of a zookeeper instance with port, e.g. "zookeeper:2181"
-zookeeperConnect: "kafka-zookeeper-zk:2181"
+zookeeperConnect: ""
 
 # useIngress indicates whether this deployment should use the cluster's ingress controller  
 # For example, deplying a test environment would specify false since it shouldn't be exposed publicly 
