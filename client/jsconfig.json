@@ -1,5 +1,9 @@
 {
     "compilerOptions": {
-        "jsx": "react"
-    }
+        "jsx": "react",
+        "checkJs": true
+    },
+    "include": [
+        "src/**/*.js"
+    ]
 }

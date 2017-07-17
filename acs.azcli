@@ -1,0 +1,54 @@
+
+# create resource group and set defaults
+az group create --name stickerAppACS-RG --location westus
+az configure --defaults group=stickerAppACS-RG location=westus
+
+# Default: 1 master VM, 3 worker VMs
+# Master VM hosts the kubectl API
+az acs create --orchestrator-type Kubernetes --name stickerApp-cluster --no-wait
+
+# kubectl is the CLI to talk to a Kubernetes cluster
+# similar to use docker CLI to talk to docker, docker swarm, etc.
+#az acs kubernetes install-cli 
+kubectl version
+
+# authenticate the kubectl CLI with the cluster
+az acs kubernetes get-credentials  --name stickerApp-cluster
+
+# confirm that we're communicating with the cluster
+kubectl cluster-info
+
+# kubernetes portal 
+kubectl proxy
+
+# run 3 instances of the chrisdias/stickerapp:latest image
+kubectl run stickerapp-prod --image chrisdias/stickerapp:latest --port=3000 --replicas=3 --env "MONGODB_URL="
+
+# set up an Azure load balancer, map external port 80 to container port 3000 
+kubectl expose deployments stickerapp-prod --port=80 --target-port=3000 --type=LoadBalancer 
+
+# get the public IP address (mut wait for load balancer to spin up)
+kubectl get svc
+
+# run a "debug"" deployment, do not expose to deployment 
+kubectl run stickerapp-debug --env "MONGODB_URL=" --image chrisdias/stickerapp:latest -- node --debug=5858 server/index.js 
+
+# get name of pod (container) in Kubernetes
+kubectl get pods
+kubectl port-forward stickerapp-debug-1587415414-r40zv 5858:5858 3000:3000
+# now set breakpoint and attach debugger!
+
+# clean up everything!
+az group delete --name stickerAppACS-RG --yes --no-wait
+
+
+# IntelliSense
+az account list --all
+az account set --subscription MSDN
+
+# jmsepath queries
+az account list --query [].user
+az account list --query [1]
+az account list --query [2].id
+az account list --query [1].name
+

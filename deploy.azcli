@@ -1,0 +1,31 @@
+
+
+az login
+
+az account set --subscription MSDN
+az group create --name stickerapp-resources --location westus
+az configure --defaults group=stickerapp-resources location=westus
+
+az cosmosdb create --name stickerapp-mongodb --kind MongoDB 
+az appservice plan create --name stickerapp-plan2 --is-linux --sku S1
+az webapp create --name stickerapp-cdias2 --plan stickerapp-plan2
+az webapp config appsettings set --name stickerapp-cdias2 --settings PORT=3000 MONGODB_URL=
+az webapp config container set --docker-custom-image-name chrisdias/stickerapp:latest --name stickerapp-cdias2
+az webapp browse --name stickerapp-cdias2
+
+az webapp create --name foo --plan 
+
+az documentdb list-connection-strings --name stickerapp-mongodb
+az resource list --output json
+
+az webapp browse --name
+
+az webapp delete --name stickerapp-cdias2 
+az appservice plan delete --name stickerapp-plan2 --yes
+
+
+
+az account list --query [1]
+
+
+

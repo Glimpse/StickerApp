@@ -7,7 +7,7 @@ module.exports = {
     'mongodb': {
         'port': 27017,
         'host': 'localhost',
-        'dbName': 'getStickersDemo',
+        'dbName': 'stickersDB',
         'stickerCollectionName': 'stickers',
         'orderCollectionName': 'orders',
         'feedbackCollectionName': 'feedback',
