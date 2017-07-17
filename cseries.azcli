@@ -1,0 +1,17 @@
+
+az account list -o table
+az group deployment create --name stickerAppContainerGroup --template-file ./helloworld.template.json
+az group deployment delete --name stickerAppContainerGroup 
+
+az resource delete --name dockercloud --id /subscriptions/b9f03513-e38b-4ef7-81a2-2669c52cdd51/resourceGroups/stickerapp-rg/providers/Microsoft.Container/containerGroups/dockercloud  --resource-type Microsoft.Container/containerGroups
+az resource delete --name stickerAppContainerGropu --id /subscriptions/b9f03513-e38b-4ef7-81a2-2669c52cdd51/resourceGroups/stickerapp-rg/providers/Microsoft.Container/containerGroups/stickerAppContainerGroup  --resource-type Microsoft.Container/containerGroups
+
+docker login -u azureContainerGroup -p VyP243=6icqcvBO+rmSyPKVNTbDJVI8/ azurecontainergroup.azurecr.io
+docker run -it azurecontainergroup.azurecr.io/azure-cli-container:0.2.3-dev3
+
+az container create --name todocontainercdias --image chrisdias/node-todo -g stickerapp-rg --port 3000
+az container logs --name todocontainercdias -g stickerapp-rg
+
+az container listall
+
+az container delete --name todocontainercdias -g stickerapp-rg

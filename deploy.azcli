@@ -23,7 +23,11 @@ az webapp browse --name
 az webapp delete --name stickerapp-cdias2 
 az appservice plan delete --name stickerapp-plan2 --yes
 
+az webapp deployment user set --user-name chrisdias --password MonacoRocks11
+az webapp deployment source config-local-git --name cdias-stickerapp --resource-group stickerApp-RG 
 
+
+git remote add azure https://chrisdias@cdias-stickerapp.scm.azurewebsites.net/cdias-stickerapp.git
 
 az account list --query [1]
 
