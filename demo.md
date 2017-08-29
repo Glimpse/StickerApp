@@ -2,9 +2,11 @@
 # Recommendation System
 
 - Azure CLI is being recommended to me because I have the az cli installed
-- mv /usr/local/bin/heroku.save /usr/local/bin/heroku
+- lets say I install something else, like the serverless function framework
+  - npm install -g serverless
 - Install Azure CLI extension, reload
-- See that we are now recommending a Heroku extension and when the App Service extension ships we'll recommend App Service
+- See that we are now recommending an Azure functions extension
+- Similarly, if we see Heroku on the machine, we will recommend the App Service extension once it is published to the marketplace
 
 # Azure CLI
 
@@ -17,10 +19,11 @@
 
 # Azure App Service
 
-- Imagine I was prompted to install the App Service extension
+- Imagine I was prompted to install the App Service extension because I have heroku installed
 - Explorer contribution, but I'm not logged in
-- Azure Login experience
-- Working on VS Code application
+- All azure extensions need to login, and today they are all slightly different
+- do the login dance
+  - Working on VS Code application
 - Persists credentials once I log in... restart VS Code and I don't have to log in again
 - Manage subscriptions (work in progress)
 - Now I can create a new Azure App Service
