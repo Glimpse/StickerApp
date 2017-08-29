@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   stickerapp:
-    image: chrisdias/stickerapp:latest
+    image: stickerapp
     build: .
     ports:
       - 3000:3000

@@ -6,6 +6,7 @@ services:
     build: .
     environment:
       NODE_ENV: development
+      MONGODB_URL: 
     ports:
       - 3000:3000
       - 9229:9229
