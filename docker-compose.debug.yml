@@ -9,6 +9,4 @@ services:
     ports:
       - 3000:3000
       - 9229:9229
-    volumes:
-      - .:/usr/src/app
     command: node --inspect server/index.js
