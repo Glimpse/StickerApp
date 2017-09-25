@@ -1,3 +1,5 @@
+// @ts-check
+
 'use strict';
 
 const path = require('path');
@@ -38,6 +40,8 @@ app.get('/', function stickerRootRedirection(req, res) {
     console.log('index.js: redirecting to browse');
     res.redirect('/browse');
 });
+
+
 
 if (config.server.https) {
     const server = https.createServer({
