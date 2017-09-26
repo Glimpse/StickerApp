@@ -1,4 +1,3 @@
-
 'use strict';
 
 const path = require('path');
@@ -40,6 +39,9 @@ app.get('/', function stickerRootRedirection(req, res) {
     res.redirect('/browse');
 });
 
+if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+    console.log('development');
+}
 if (config.server.https) {
     const server = https.createServer({
         key: fs.readFileSync(config.server.key),
