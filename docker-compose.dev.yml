@@ -48,6 +48,7 @@ services:
     - 5000:5000
     environment:
       ASPNETCORE_ENVIRONMENT: dev
+      ASPNETCORE_URLS: "http://*:5000"
     links:
     - mongo
 
