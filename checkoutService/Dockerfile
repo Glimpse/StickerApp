@@ -1,13 +1,11 @@
-FROM microsoft/dotnet:1.1.2-sdk
-WORKDIR /app
-
-# copy csproj and restore as distinct layers
-COPY CheckoutService.csproj ./
+FROM microsoft/aspnetcore-build:1.1.4 AS builder
+WORKDIR /build
+COPY . .
 RUN dotnet restore
+RUN dotnet publish -c Release -o /publish-output
 
-# copy and build everything else
-COPY . ./
-RUN dotnet publish -c Release -o out
-
-CMD ["dotnet", "out/CheckoutService.dll", "--server.urls", "http://*:5000"]
+FROM microsoft/aspnetcore:1.1.4
+WORKDIR /app
+COPY --from=builder /publish-output .
+CMD ["dotnet", "CheckoutService.dll"]
 
