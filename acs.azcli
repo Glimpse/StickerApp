@@ -1,4 +1,9 @@
 
+
+# login
+az login 
+az account list -o table
+
 # create resource group and set defaults
 az group create --name stickerAppACS-RG --location westus
 az configure --defaults group=stickerAppACS-RG location=westus
