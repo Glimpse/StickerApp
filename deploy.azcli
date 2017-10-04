@@ -1,0 +1,8 @@
+
+
+az login
+az account set --subscription MSDN
+
+# az webapp create --name cdias-stickerapp-container --plan nodeinteractive-plan --deployment-container-image-name chrisdias/stickerapp:latest --resource-group nodeinteractive-rg
+
+# az webapp config container set --name cdias-stickerapp-container-2 --docker-custom-image-name chrisdias/stickerapp:latest 
