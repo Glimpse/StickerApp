@@ -1,0 +1,12 @@
+version: '2.1'
+
+services:
+  stickerapp:
+    image: stickerapp:latest
+    build: .
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3000:3000
+      - 9229:9229
+    command: node --inspect server/index.js
