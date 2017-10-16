@@ -4,7 +4,6 @@
         {
             "taskName": "docker-compose",
             "command": "docker-compose",
-            "type": "shell",
             "args": [
                 "-f",
                 "docker-compose.debug.yml",

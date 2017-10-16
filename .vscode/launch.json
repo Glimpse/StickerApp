@@ -12,7 +12,8 @@
             "port": 9229,
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/usr/src/app",
-            "preLaunchTask": "docker-compose"
+            "preLaunchTask": "docker-compose",
+            "protocol": "inspector"
         }
     ]
 }
