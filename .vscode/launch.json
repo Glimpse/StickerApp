@@ -40,6 +40,30 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/server/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch in Docker",
+            "protocol": "inspector",
+            "runtimeExecutable": "docker",
+            "runtimeArgs": [
+                "run",
+                "-p",
+                "3000:3000",
+                "-p",
+                "5858:5858",
+                "stickerapp:latest",
+                "node",
+                "--inspect=0.0.0.0:5858",
+                "server/index.js"
+            ],
+            "port": 5858,
+            "timeout": 60000,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/usr/src/app",
+            "console": "internalConsole"
         }
+
     ]
 }
