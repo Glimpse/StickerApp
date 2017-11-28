@@ -6,7 +6,8 @@ services:
     build: .
     environment:
       NODE_ENV: development
+      MONDGODB_URL: 
     ports:
       - 3000:3000
       - 9229:9229
-    command: node --inspect server/index.js
+    command: node --inspect=0.0.0.0:9229 server/index.js
