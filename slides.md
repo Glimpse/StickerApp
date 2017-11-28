@@ -9,11 +9,11 @@ highlightTheme: "darkula"
 ---
 
 # VS Code
-## Optimize your Node.js Development Inner Loop
+## Tips and Tricks
 
 Chris Dias
 
-Program Manager
+Principal Program Manager, VS Code
 
 Microsoft
 
@@ -37,11 +37,19 @@ Microsoft
 
 # Agenda
 
-* Code Editing 
-* Tasks
-* Debugging
-* Docker
-* Deployment
+* Configuration / Aufbau
+* Key Binding / Schlüsselbindung
+* Workspace Navigation / Arbeitsbereichsnavigation
+* Code Editing / Codebearbeitung
+* Code Navigation / Code-Navigation
+* Linting / Fusseln
+* Debugging / Debuggen
+* Tasks / Aufgaben
+* Terminal / Terminal
+* Source Code Control / Quellcodeverwaltung
+* Großes Finale
+
+*Thanks to Google Translate*
 
 ---
 
