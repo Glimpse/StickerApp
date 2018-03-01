@@ -5,7 +5,8 @@
   "scripts": {
     "build": "gulp",
     "clean": "gulp clean",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "debug": "node --inspect server/index.js"
   },
   "dependencies": {
     "body-parser": "^1.15.0",

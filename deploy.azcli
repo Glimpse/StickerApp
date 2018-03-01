@@ -1,7 +1,11 @@
 
 
 az login
-az account set --subscription MSDN
+az account list --all -o table
+az account set --subscription "StickerApp Subscription"
+az group list -o table
+az configure --defaults group=stickerApp-rg
+az appservice plan list -o table
 
 # az webapp create --name cdias-stickerapp-container --plan nodeinteractive-plan --deployment-container-image-name chrisdias/stickerapp:latest --resource-group nodeinteractive-rg
 

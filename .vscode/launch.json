@@ -5,14 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Docker: Attach to Node",
             "type": "node",
             "request": "attach",
-            "name": "Docker",
-            "address": "localhost",
             "port": 9229,
+            "address": "localhost",
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/usr/src/app",
-            "preLaunchTask": "docker-compose",
             "protocol": "inspector"
         }
     ]
